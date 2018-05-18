@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = liberty-qt
+TARGET = blocknetdx-qt
 VERSION = 1.0.0
 
 DEFINES += \
@@ -210,8 +210,9 @@ SOURCES += \
     src/validationinterface.cpp \
     src/wallet_ismine.cpp \
     src/qt/bip38tooldialog.cpp \
-    src/qt/liberty.cpp \
-    src/qt/libertystrings.cpp \
+    src/qt/blockexplorer.cpp \
+    src/qt/blocknetdx.cpp \
+    src/qt/blocknetdxstrings.cpp \
     src/qt/intro.cpp \
     src/qt/multisenddialog.cpp \
     src/qt/networkstyle.cpp \
@@ -283,10 +284,7 @@ SOURCES += \
     src/bip38.cpp \
     src/s3downloader.cpp \
     src/coinvalidator.cpp \
-    src/xbridge/xkey.cpp \
-    src/xbridge/xpubkey.cpp \
     src/xbridge/xbitcoinaddress.cpp \
-    src/xbridge/xbitcoinsecret.cpp \
     src/qt/xbridgeui/xbridgeaddressbookmodel.cpp \
     src/qt/xbridgeui/xbridgeaddressbookview.cpp \
     src/qt/xbridgeui/xbridgetransactiondialog.cpp \
@@ -297,10 +295,9 @@ SOURCES += \
     src/xbridge/util/xbridgeerror.cpp \
     src/xbridge/xbridgewalletconnector.cpp \
     src/xbridge/xbridgewalletconnectorbtc.cpp \
-    src/xbridge/xbridgewalletconnectorbcc.cpp \
-    src/xbridge/xbridgewalletconnectorsys.cpp \
-    src/xbridge/xbridgewalletconnectordgb.cpp \
-    src/xbridge/xbridgepacket.cpp
+    src/xbridge/xbridgepacket.cpp \
+    src/xbridge/xbridgecryptoproviderbtc.cpp \
+    src/xbridge/xbridgewalletconnectorbch.cpp
 
 #protobuf generated
 SOURCES += \
@@ -498,6 +495,7 @@ HEADERS += \
     src/validationinterface.h \
     src/wallet_ismine.h \
     src/qt/bip38tooldialog.h \
+    src/qt/blockexplorer.h \
     src/qt/intro.h \
     src/qt/multisenddialog.h \
     src/qt/networkstyle.h \
@@ -587,10 +585,9 @@ HEADERS += \
     src/validationstate.h \
     src/xbridge/xbridgewalletconnector.h \
     src/xbridge/xbridgewalletconnectorbtc.h \
-    src/xbridge/xbridgewalletconnectorbcc.h \
-    src/xbridge/xbridgewalletconnectorsys.h \
-    src/xbridge/xbridgewalletconnectordgb.h \
-    src/xbridge/xbridgedef.h
+    src/xbridge/xbridgedef.h \
+    src/xbridge/xbridgecryptoproviderbtc.h \
+    src/xbridge/xbridgewalletconnectorbch.h
 
 #ENABLE_ZMQ
 #    src/zmq/zmqabstractnotifier.h \
@@ -651,8 +648,8 @@ SOURCES += \
     src/kernel.cpp
 
 RESOURCES += \
-    src/qt/liberty.qrc \
-    src/qt/liberty_locale.qrc
+    src/qt/blocknetdx.qrc \
+    src/qt/blocknetdx_locale.qrc
 
 FORMS += \
     src/qt/forms/coincontroldialog.ui \
@@ -667,6 +664,7 @@ FORMS += \
     src/qt/forms/rpcconsole.ui \
     src/qt/forms/optionsdialog.ui \
     src/qt/forms/bip38tooldialog.ui \
+    src/qt/forms/blockexplorer.ui \
     src/qt/forms/helpmessagedialog.ui \
     src/qt/forms/intro.ui \
     src/qt/forms/multisenddialog.ui \
@@ -688,7 +686,7 @@ CODECFORTR = UTF-8
 
 # for lrelease/lupdate
 # also add new translations to src/qt/bitcoin.qrc under translations/
-TRANSLATIONS = $$files(src/qt/locale/liberty_*.ts)
+TRANSLATIONS = $$files(src/qt/locale/blocknetdx_*.ts)
 
 isEmpty(QMAKE_LRELEASE) {
     win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease.exe
@@ -709,7 +707,7 @@ OTHER_FILES += \
     doc/*.txt \
     doc/README \
     README.md \
-    res/liberty-qt-res.rc \
+    res/blocknetdx-qt-res.rc \
     configure.ac
 
 
@@ -745,7 +743,7 @@ isEmpty(BOOST_INCLUDE_PATH) {
 
 windows:DEFINES += WIN32
 windows:QMAKE_RC = windres -DWINDRES_PREPROC
-windows:RC_FILE = src/qt/res/liberty-qt-res.rc
+windows:RC_FILE = src/qt/res/blocknetdx-qt-res.rc
 
 windows:!contains(MINGW_THREAD_BUGFIX, 0) {
     # At least qmake's win32-g++-cross profile is missing the -lmingwthrd
@@ -767,8 +765,8 @@ macx:HEADERS += src/qt/macdockiconhandler.h src/qt/macnotificationhandler.h
 macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm src/qt/macnotificationhandler.mm
 macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit
 macx:DEFINES += MAC_OSX MSG_NOSIGNAL=0
-macx:ICON = src/qt/res/icons/liberty.icns
-macx:TARGET = "liberty-qt"
+macx:ICON = src/qt/res/icons/blocknet.icns
+macx:TARGET = "blocknet-Qt"
 macx:QMAKE_CFLAGS_THREAD += -pthread
 macx:QMAKE_LFLAGS_THREAD += -pthread
 macx:QMAKE_CXXFLAGS_THREAD += -pthread

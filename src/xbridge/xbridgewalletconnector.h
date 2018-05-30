@@ -95,7 +95,7 @@ public:
 
 public:
     // helper functions
-    bool hasValidAddressPrefix(const std::string & addr) const;
+    virtual bool hasValidAddressPrefix(const std::string & addr) const = 0;
 
     virtual bool isDustAmount(const double & amount) const = 0;
 

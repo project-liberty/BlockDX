@@ -2207,6 +2207,7 @@ libxbridge_xbridge_a_SOURCES = \
   xbridge/util/xutil.h \
   xbridge/util/xbridgeerror.h \
   xbridge/posixtimeconversion.h \
+  xbridge/util/xassert.h \
   $(BITCOIN_CORE_H)
 
 

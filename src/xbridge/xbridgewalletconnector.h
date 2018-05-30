@@ -82,7 +82,7 @@ public:
 
 public:
     // helper functions
-    bool hasValidAddressPrefix(const std::string & addr) const;
+    virtual bool hasValidAddressPrefix(const std::string & addr) const = 0;
 
     virtual bool isDustAmount(const double & amount) const = 0;
 
@@ -95,10 +95,10 @@ public:
     virtual double minTxFee1(const uint32_t inputCount, const uint32_t outputCount) const = 0;
     virtual double minTxFee2(const uint32_t inputCount, const uint32_t outputCount) const = 0;
 
-    virtual bool checkTransaction(const std::string & depositTxId,
-                                  const std::string & /*destination*/,
-                                  const uint64_t & /*amount*/,
-                                  bool & isGood) = 0;
+    virtual bool checkDepositTransaction(const std::string & depositTxId,
+                                         const std::string & /*destination*/,
+                                         double & amount,
+                                         bool & isGood) = 0;
 
     virtual uint32_t lockTime(const char role) const = 0;
 

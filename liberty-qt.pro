@@ -300,7 +300,10 @@ SOURCES += \
     src/xbridge/xbridgewalletconnectorbcc.cpp \
     src/xbridge/xbridgewalletconnectorsys.cpp \
     src/xbridge/xbridgewalletconnectordgb.cpp \
+    src/xbridge/xbridgewalletconnectorbch.cpp \
+    src/xbridge/xbridgecryptoproviderbtc.cpp
     src/xbridge/xbridgepacket.cpp
+    src/xbridge/xbridgeservicespacket.cpp
 
 #protobuf generated
 SOURCES += \
@@ -560,6 +563,7 @@ HEADERS += \
     src/xbridge/xbridgeapp.h \
     src/xbridge/xbridgeexchange.h \
     src/xbridge/xbridgepacket.h \
+    src/xbridge/xbridgeservicespacket.h \
     src/xbridge/xbridgesession.h \
     src/xbridge/xbridgetransaction.h \
     src/xbridge/xbridgetransactiondescr.h \

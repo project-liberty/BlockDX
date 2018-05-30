@@ -9,11 +9,13 @@
 #include "bitcoinrpcconnector.h"
 #include "activeservicenode.h"
 #include "chainparamsbase.h"
+#include "coinvalidator.h"
 
 #include "key.h"
 #include "pubkey.h"
 
 #include <algorithm>
+#include <boost/algorithm/string/join.hpp>
 
 //******************************************************************************
 //******************************************************************************
@@ -244,7 +246,7 @@ bool Exchange::checkUtxoItems(const uint256 & txid, const std::vector<wallet::Ut
     // check
     for (const wallet::UtxoEntry & item : items)
     {
-        if (m_p->m_utxoItems.count(item))
+        if (m_p->m_utxoItems.count(item) || !CoinValidator::instance().IsCoinValid(item.txId)) // check not in bad funds
         {
             // duplicate items
             return false;
@@ -547,11 +549,10 @@ bool Exchange::updateTransactionWhenHoldApplyReceived(const TransactionPtr & tx,
 //*****************************************************************************
 //*****************************************************************************
 bool Exchange::updateTransactionWhenInitializedReceived(const TransactionPtr &tx,
-                                                               const std::vector<unsigned char> & from,
-                                                               const uint256 & datatxid,
-                                                               const std::vector<unsigned char> & pk)
+                                                        const std::vector<unsigned char> & from,
+                                                        const std::vector<unsigned char> & pk)
 {
-    if (!tx->setKeys(from, datatxid, pk))
+    if (!tx->setKeys(from, pk))
     {
         // wtf?
         LOG() << "unknown sender address for transaction, id <" << tx->id().GetHex() << ">";
@@ -725,17 +726,14 @@ size_t Exchange::eraseExpiredTransactions()
         {
             LOG() << __FUNCTION__ << std::endl << "order expired" << ptr;
 
-            m_p->m_pendingTransactions.erase(it);
+            m_p->m_pendingTransactions.erase(it++);
 
             unlockUtxos(ptr->id());
 
             ++result;
+        } else {
+            ++it;
         }
-
-        if (m_p->m_pendingTransactions.empty())
-            break;
-
-        ++it;
     }
 
     if(result > 0)
@@ -782,5 +780,20 @@ bool Exchange::unlockUtxos(const uint256 &id) {
     return true;
 }
 
-} // namespace xbridge
+/**
+ * @brief Creates a services packet that can be sent to the network.
+ * @param services All services to be reported to the network.
+ * @return
+ */
+XBridgePacketPtr Exchange::servicesPingPacket(const std::vector<std::string> &services) {
+    std::string servicesStr = boost::algorithm::join(services, ",");
 
+    XBridgePacketPtr ping(new XBridgePacket(xbcServicesPing));
+    ping->append(static_cast<uint32_t>(services.size()));
+    ping->append(servicesStr);
+    ping->sign(this->pubKey(), this->privKey());
+
+    return ping;
+}
+
+} // namespace xbridge

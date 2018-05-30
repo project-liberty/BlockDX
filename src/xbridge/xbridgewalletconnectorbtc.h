@@ -47,6 +47,8 @@ public:
     bool verifyMessage(const std::string & address, const std::string & message, const std::string & signature);
 
 public:
+    bool hasValidAddressPrefix(const std::string & addr) const;
+
     bool isDustAmount(const double & amount) const;
 
     bool newKeyPair(std::vector<unsigned char> & pubkey, std::vector<unsigned char> & privkey);
@@ -58,10 +60,10 @@ public:
     double minTxFee1(const uint32_t inputCount, const uint32_t outputCount) const;
     double minTxFee2(const uint32_t inputCount, const uint32_t outputCount) const;
 
-    bool checkTransaction(const std::string & depositTxId,
-                          const std::string & /*destination*/,
-                          const uint64_t & /*amount*/,
-                          bool & isGood);
+    bool checkDepositTransaction(const std::string & depositTxId,
+                                 const std::string & /*destination*/,
+                                 double & amount,
+                                 bool & isGood);
 
     uint32_t lockTime(const char role) const;
 
@@ -93,6 +95,9 @@ public:
                                   const std::vector<unsigned char> & innerScript,
                                   std::string & txId,
                                   std::string & rawTx);
+
+protected:
+    CryptoProvider m_cp;
 };
 
 } // namespace xbridge

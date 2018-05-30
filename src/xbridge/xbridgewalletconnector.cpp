@@ -63,24 +63,54 @@ double WalletConnector::getWalletBalance(const std::string &addr) const
     return amount;
 }
 
-/**
- * \brief Checks if specified address has a valid prefix.
- * \param addr Address to check
- * \return returns true if address has a valid prefix, otherwise false.
- *
- * If the specified wallet address has a valid prefix the method returns true, otherwise false.
- */
-bool WalletConnector::hasValidAddressPrefix(const std::string &addr) const {
-    std::vector<unsigned char> decoded;
-    if (!DecodeBase58Check(addr, decoded))
+//******************************************************************************
+//******************************************************************************
+bool WalletConnector::lockCoins(const std::vector<wallet::UtxoEntry> & inputs,
+                                const bool lock)
+{
+    boost::lock_guard<boost::mutex> l(lockedCoinsLocker);
+
+    if (!lock)
     {
-        return false;
+        for (const wallet::UtxoEntry & entry : inputs)
+        {
+            lockedCoins.erase(entry);
+        }
+    }
+    else
+    {
+        // check duplicates
+        for (const wallet::UtxoEntry & entry : inputs)
+        {
+            if (lockedCoins.count(entry))
+            {
+                return false;
+            }
+        }
+
+        lockedCoins.insert(inputs.begin(), inputs.end());
     }
 
-    bool isP2PKH = memcmp(addrPrefix,   &decoded[0], decoded.size()-sizeof(uint160)) == 0;
-    bool isP2SH  = memcmp(scriptPrefix, &decoded[0], decoded.size()-sizeof(uint160)) == 0;
+    return true;
+}
 
-    return isP2PKH || isP2SH;
+//******************************************************************************
+//******************************************************************************
+void WalletConnector::removeLocked(std::vector<wallet::UtxoEntry> & inputs) const
+{
+    boost::lock_guard<boost::mutex> lock(lockedCoinsLocker);
+
+    for (auto it = inputs.begin(); it != inputs.end(); )
+    {
+        if (lockedCoins.count(*it))
+        {
+            it = inputs.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }
 
 } // namespace xbridge

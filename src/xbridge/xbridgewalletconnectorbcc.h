@@ -18,6 +18,17 @@ class BccWalletConnector : public BtcWalletConnector
 public:
     BccWalletConnector();
 
+    bool init();
+
+public:
+    std::string fromXAddr(const std::vector<unsigned char> & xaddr) const;
+    std::vector<unsigned char> toXAddr(const std::string & addr) const;
+
+public:
+    bool hasValidAddressPrefix(const std::string & addr) const;
+
+    std::string scriptIdToString(const std::vector<unsigned char> & id) const;
+
 public:
     bool createRefundTransaction(const std::vector<std::pair<std::string, int> > & inputs,
                                  const std::vector<std::pair<std::string, double> > & outputs,

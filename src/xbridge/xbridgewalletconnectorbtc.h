@@ -6,6 +6,8 @@
 
 #include "xbridgewalletconnector.h"
 
+#include <memory>
+
 //*****************************************************************************
 //*****************************************************************************
 namespace xbridge
@@ -13,10 +15,13 @@ namespace xbridge
 
 //*****************************************************************************
 //*****************************************************************************
+template <class CryptoProvider>
 class BtcWalletConnector : public WalletConnector
 {
+    class Impl;
+
 public:
-    BtcWalletConnector();
+    BtcWalletConnector() {}
 
     bool init();
 
@@ -30,9 +35,9 @@ public:
 
     bool getInfo(rpc::WalletInfo & info) const;
 
-    bool getUnspent(std::vector<wallet::UtxoEntry> & inputs, const bool withoutDust = true) const;
+    bool getUnspent(std::vector<wallet::UtxoEntry> & inputs, const bool withLocked = false) const;
 
-    bool lockCoins(const std::vector<wallet::UtxoEntry> & inputs, const bool lock = true) const;
+    bool lockCoins(const std::vector<wallet::UtxoEntry> & inputs, const bool lock = true);
 
     bool getNewAddress(std::string & addr);
 
@@ -95,6 +100,9 @@ public:
                                   const std::vector<unsigned char> & innerScript,
                                   std::string & txId,
                                   std::string & rawTx);
+
+protected:
+    CryptoProvider m_cp;
 };
 
 } // namespace xbridge

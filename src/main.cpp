@@ -52,6 +52,7 @@ using namespace std;
  * Global state
  */
 
+AutoTruncateLog global_auto_truncate_log;
 CCriticalSection cs_main;
 
 BlockMap mapBlockIndex;
@@ -3602,6 +3603,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
             obfuScationPool.NewBlock();
             servicenodePayments.ProcessBlock(GetHeight() + 10);
             budget.NewBlock();
+            global_auto_truncate_log.check(GetHeight());
         }
     }
 

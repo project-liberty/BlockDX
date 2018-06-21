@@ -1,9 +1,9 @@
-## Blocknet RPC expanded with API for Decentralized Exchange. 
-## They can be used like ordinary blocknet rpc methods.
+## Liberty RPC expanded with API for Decentralized Exchange. 
+## They can be used like ordinary liberty rpc methods.
 
 `dxGetTransactionList` - without params, return list of pending and active XBridge transactions
 example:
-`./blocknetdx-cli dxGetTransactionList`
+`./liberty-cli dxGetTransactionList`
 
 Output:
 ```
@@ -24,7 +24,7 @@ Output:
 `dxGetTransactionsHistoryList` - without params, return list of historic XBridge transactions
 example:
 ```
-./blocknetdx-cli dxGetTransactionsHistoryList
+./liberty-cli dxGetTransactionsHistoryList
 ```
 
 Output:
@@ -59,7 +59,7 @@ id - id of transaction
 
 example:
 ```
-./blocknetdx-cli dxGetTransactionInfo d63f5ed682ad744b176af1d58e9602219a40ab9bf3b506baeca81b975d999b38
+./liberty-cli dxGetTransactionInfo d63f5ed682ad744b176af1d58e9602219a40ab9bf3b506baeca81b975d999b38
 ```
 
 Output:
@@ -84,7 +84,7 @@ Output:
 `dxGetCurrencyList` - without params, return list of connected wallets with their currencies names
 example:
 ```
-./blocknetdx-cli dxGetCurrencyList
+./liberty-cli dxGetCurrencyList
 ```
 
 
@@ -114,7 +114,7 @@ amount to - amount of coins that will be receive
 
 example:
 ```
-./blocknetdx-cli dxCreateTransaction LTnoVFAnKSMj4v2eFXBJuMmyjqSQT9eXBy LTC 0.001 12BueeBVD2uiAHViXf7jPVQb2MSQ1Eggey SYS 1
+./liberty-cli dxCreateTransaction LTnoVFAnKSMj4v2eFXBJuMmyjqSQT9eXBy LTC 0.001 12BueeBVD2uiAHViXf7jPVQb2MSQ1Eggey SYS 1
 ```
 
 Output:
@@ -139,7 +139,7 @@ address to - to wallet address
 
 example:
 ```
-./blocknetdx-cli dxAcceptTransaction 222db6ba15d82ab9939b6f192d7c67c8abf12eef07f2e91983b68864b8678126 LTnoVFAnKSMj4v2eFXBJuMmyjqSQT9eXBy 12BueeBVD2uiAHViXf7jPVQb2MSQ1Eggey
+./liberty-cli dxAcceptTransaction 222db6ba15d82ab9939b6f192d7c67c8abf12eef07f2e91983b68864b8678126 LTnoVFAnKSMj4v2eFXBJuMmyjqSQT9eXBy 12BueeBVD2uiAHViXf7jPVQb2MSQ1Eggey
 ```
 
 Output:
@@ -157,7 +157,7 @@ id - id of exchanging transaction
 
 example:
 ```
-./blocknetdx-cli dxCancelTransaction 8d8a570e1b3d003c2a2063491f9eea14e27fe3800443c981b0535aff9f59e37c
+./liberty-cli dxCancelTransaction 8d8a570e1b3d003c2a2063491f9eea14e27fe3800443c981b0535aff9f59e37c
 ```
 
 Output:

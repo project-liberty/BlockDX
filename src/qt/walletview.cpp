@@ -8,7 +8,6 @@
 #include "askpassphrasedialog.h"
 #include "bip38tooldialog.h"
 #include "bitcoingui.h"
-#include "blockexplorer.h"
 #include "clientmodel.h"
 #include "guiutil.h"
 #include "servicenodeconfig.h"
@@ -43,7 +42,6 @@ WalletView::WalletView(QWidget* parent) : QStackedWidget(parent),
 {
     // Create tabs
     overviewPage = new OverviewPage();
-    explorerWindow = new BlockExplorer(this);
     transactionsPage = new QWidget(this);
     QVBoxLayout* vbox = new QVBoxLayout();
     QHBoxLayout* hbox_buttons = new QHBoxLayout();
@@ -86,7 +84,6 @@ WalletView::WalletView(QWidget* parent) : QStackedWidget(parent),
     addWidget(transactionsPage);
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
-    addWidget(explorerWindow);
 
     if (xbridge::App::isEnabled())
     {
@@ -217,12 +214,6 @@ void WalletView::gotoHistoryPage()
 void WalletView::gotoXBridgePage()
 {
     setCurrentWidget(xbridgePage);
-}
-
-
-void WalletView::gotoBlockExplorerPage()
-{
-    setCurrentWidget(explorerWindow);
 }
 
 void WalletView::gotoServicenodePage()

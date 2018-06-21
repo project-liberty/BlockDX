@@ -99,7 +99,7 @@ public:
 };
 
 /**
- * BlocknetDX RPC command dispatcher.
+ * Liberty RPC command dispatcher.
  */
 class CRPCTable
 {
@@ -119,6 +119,11 @@ public:
      * @throws an exception (json_spirit::Value) when an error happens.
      */
     json_spirit::Value execute(const std::string& method, const json_spirit::Array& params) const;
+    /**
+    * Returns a list of registered commands
+    * @returns List of registered commands.
+    */
+    std::vector<std::string> listCommands() const;
 };
 
 extern const CRPCTable tableRPC;
@@ -267,7 +272,7 @@ extern json_spirit::Value mnsync(const json_spirit::Array& params, bool fHelp);
     [
         {
             "id" : "1632417312d5ea676abb88b8fb48ace1a11e9b1a937fc24ff79296d9d2963b32",
-            "from" : "BLOCK",
+            "from" : "LBRT",
             "fromAddress" : "",
             "fromAmount" : 0.01000000000000000,
             "to" : "SYS",
@@ -305,7 +310,7 @@ extern json_spirit::Value dxGetOrders(const json_spirit::Array& params, bool fHe
     [
         {
             "id" : "1632417312d5ea676abb88b8fb48ace1a11e9b1a937fc24ff79296d9d2963b32",
-            "from" : "BLOCK",
+            "from" : "LBRT",
             "fromAddress" : "",
             "fromAmount" : 0.01000000000000000,
             "to" : "SYS",
@@ -354,7 +359,7 @@ extern json_spirit::Value dxGetOrderFills(const json_spirit::Array& params, bool
             "from" : "LTC",
             "fromAddress" : "",
             "fromAmount" : 0.01000000000000000,
-            "to" : "BLOCK",
+            "to" : "LBRT",
             "toAddress" : "",
             "toAmount" : 0.05500000000000000,
             "state" : "Open"

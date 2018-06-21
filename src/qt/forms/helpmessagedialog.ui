@@ -28,7 +28,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string notr="true">BlocknetDX Core - Command-line options</string>
+   <string notr="true">Liberty Core - Command-line options</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
@@ -46,7 +46,7 @@
       <enum>Qt::LeftToRight</enum>
      </property>
      <property name="pixmap">
-      <pixmap resource="../blocknetdx.qrc">:/images/aboutImage1</pixmap>
+      <pixmap resource="../liberty.qrc">:/images/aboutImage1</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1352,7 +1352,7 @@
             <enum>Qt::PlainText</enum>
            </property>
            <property name="pixmap">
-            <pixmap resource="../blocknetdx.qrc">:/images/aboutImage1_bg</pixmap>
+            <pixmap resource="../liberty.qrc">:/images/aboutImage1_bg</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1387,7 +1387,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../blocknetdx.qrc"/>
+  <include location="../liberty.qrc"/>
  </resources>
  <connections>
   <connection>

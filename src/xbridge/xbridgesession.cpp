@@ -1337,7 +1337,7 @@ bool Session::Impl::processTransactionInit(XBridgePacketPtr packet) const
             return false;
         }
 
-        // send blocknet tx with hash of X
+        // send liberty tx with hash of X
         std::vector<unsigned char> xid = conn->getKeyId(xtx->xPubKey);
         if(xid.size() != 20)
         {
@@ -1349,8 +1349,8 @@ bool Session::Impl::processTransactionInit(XBridgePacketPtr packet) const
         if (!rpc::storeDataIntoBlockchain(snodeAddress, conn->serviceNodeFee,
                                           std::vector<unsigned char>(xid.begin(), xid.end()), strtxid))
         {
-            ERR() << "storeDataIntoBlockchain failed, error send blocknet tx " << __FUNCTION__;
-            sendCancelTransaction(xtx, crBlocknetError);
+            ERR() << "storeDataIntoBlockchain failed, error send liberty tx " << __FUNCTION__;
+            sendCancelTransaction(xtx, crLibertyError);
             return true;
         }
 

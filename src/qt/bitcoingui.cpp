@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Blocknet developers
+// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -24,7 +24,6 @@
 #include "xbridge/xbridgeapp.h"
 
 #ifdef ENABLE_WALLET
-#include "blockexplorer.h"
 #include "walletframe.h"
 #include "walletmodel.h"
 #endif // ENABLE_WALLET
@@ -109,7 +108,6 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
                                                                             trayIconMenu(0),
                                                                             notificator(0),
                                                                             rpcConsole(0),
-                                                                            explorerWindow(0),
                                                                             prevBlocks(0),
                                                                             spinnerFrame(0)
 {
@@ -121,7 +119,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
 
     GUIUtil::restoreWindowGeometry("nWindow", QSize(850, 550), this);
 
-    QString windowTitle = tr("BlocknetDX Core") + " - ";
+    QString windowTitle = tr("Liberty Core") + " - ";
 #ifdef ENABLE_WALLET
     /* if compiled with wallet support, -disablewallet can still disable the wallet */
     enableWallet = !GetBoolArg("-disablewallet", false);
@@ -162,7 +160,6 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     if (enableWallet) {
         /** Create wallet frame*/
         walletFrame = new WalletFrame(this);
-        explorerWindow = new BlockExplorer(this);
     } else
 #endif // ENABLE_WALLET
     {
@@ -256,11 +253,6 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     // prevents an open debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
 
-    // connect(openBlockExplorerAction, SIGNAL(triggered()), explorerWindow, SLOT(show()));
-
-    // prevents an open debug window from becoming stuck/unusable on client shutdown
-    // connect(quitAction, SIGNAL(triggered()), explorerWindow, SLOT(hide()));
-
     // Install event filter to be able to catch status tip events (QEvent::StatusTip)
     this->installEventFilter(this);
 
@@ -306,7 +298,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     tabGroup->addAction(overviewAction);
 
     sendCoinsAction = new QAction(QIcon(":/icons/send"), tr("&send"), this);
-    sendCoinsAction->setStatusTip(tr("Send coins to a BlocknetDX address"));
+    sendCoinsAction->setStatusTip(tr("Send coins to a Liberty address"));
     sendCoinsAction->setToolTip(sendCoinsAction->statusTip());
     sendCoinsAction->setCheckable(true);
 #ifdef Q_OS_MAC
@@ -317,7 +309,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     tabGroup->addAction(sendCoinsAction);
 
     receiveCoinsAction = new QAction(QIcon(":/icons/receiving_addresses"), tr("&receive"), this);
-    receiveCoinsAction->setStatusTip(tr("Request payments (generates QR codes and blocknetdx: URIs)"));
+    receiveCoinsAction->setStatusTip(tr("Request payments (generates QR codes and liberty: URIs)"));
     receiveCoinsAction->setToolTip(receiveCoinsAction->statusTip());
     receiveCoinsAction->setCheckable(true);
 #ifdef Q_OS_MAC
@@ -341,7 +333,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
 #ifdef ENABLE_WALLET
 
     // TODO icons
-    xbridgeAction = new QAction(QIcon(":/icons/servicenodes"), tr("&blocknet dx"), this);
+    xbridgeAction = new QAction(QIcon(":/icons/servicenodes"), tr("&exchange"), this);
     xbridgeAction->setToolTip(tr("Show xbridge dialog"));
     // xbridgeAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
     xbridgeAction->setCheckable(true);
@@ -383,8 +375,8 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     quitAction->setStatusTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(networkStyle->getAppIcon(), tr("&About BlocknetDX Core"), this);
-    aboutAction->setStatusTip(tr("Show information about BlocknetDX Core"));
+    aboutAction = new QAction(networkStyle->getAppIcon(), tr("&About Liberty Core"), this);
+    aboutAction->setStatusTip(tr("Show information about Liberty Core"));
     aboutAction->setMenuRole(QAction::AboutRole);
 #if QT_VERSION < 0x050000
     aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
@@ -394,7 +386,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     aboutQtAction->setStatusTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
-    optionsAction->setStatusTip(tr("Modify configuration options for BlocknetDX"));
+    optionsAction->setStatusTip(tr("Modify configuration options for Liberty"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
     toggleHideAction = new QAction(networkStyle->getAppIcon(), tr("&Show / Hide"), this);
     toggleHideAction->setStatusTip(tr("Show or hide the main Window"));
@@ -410,9 +402,9 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     unlockWalletAction->setToolTip(tr("Unlock wallet"));
     lockWalletAction = new QAction(tr("&Lock Wallet"), this);
     signMessageAction = new QAction(QIcon(":/icons/edit"), tr("Sign &message..."), this);
-    signMessageAction->setStatusTip(tr("Sign messages with your BlocknetDX addresses to prove you own them"));
+    signMessageAction->setStatusTip(tr("Sign messages with your Liberty addresses to prove you own them"));
     verifyMessageAction = new QAction(QIcon(":/icons/transaction_0"), tr("&Verify message..."), this);
-    verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified BlocknetDX addresses"));
+    verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified Liberty addresses"));
     bip38ToolAction = new QAction(QIcon(":/icons/key"), tr("&BIP38 tool"), this);
     bip38ToolAction->setToolTip(tr("Encrypt and decrypt private keys using a passphrase"));
     multiSendAction = new QAction(QIcon(":/icons/edit"), tr("&MultiSend"), this);
@@ -442,13 +434,11 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     usedReceivingAddressesAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
 
     openAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_FileIcon), tr("Open &URI..."), this);
-    openAction->setStatusTip(tr("Open a BlocknetDX: URI or payment request"));
-    openBlockExplorerAction = new QAction(QIcon(":/icons/explorer"), tr("&Blockchain explorer"), this);
-    openBlockExplorerAction->setStatusTip(tr("Block explorer window"));
+    openAction->setStatusTip(tr("Open a Liberty: URI or payment request"));
 
     showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Command-line options"), this);
     showHelpMessageAction->setMenuRole(QAction::NoRole);
-    showHelpMessageAction->setStatusTip(tr("Show the BlocknetDX Core help message to get a list with possible BlocknetDX command-line options"));
+    showHelpMessageAction->setStatusTip(tr("Show the Liberty Core help message to get a list with possible Liberty command-line options"));
 
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(aboutClicked()));
@@ -521,7 +511,6 @@ void BitcoinGUI::createMenuBar()
         tools->addAction(openConfEditorAction);
         tools->addAction(openMNConfEditorAction);
         tools->addAction(showBackupsAction);
-        tools->addAction(openBlockExplorerAction);
     }
 
     QMenu* help = appMenuBar->addMenu(tr("&Help"));
@@ -656,7 +645,7 @@ void BitcoinGUI::createTrayIcon(const NetworkStyle* networkStyle)
 {
 #ifndef Q_OS_MAC
     trayIcon = new QSystemTrayIcon(this);
-    QString toolTip = tr("BlocknetDX Core client") + " " + networkStyle->getTitleAddText();
+    QString toolTip = tr("Liberty Core client") + " " + networkStyle->getTitleAddText();
     trayIcon->setToolTip(toolTip);
     trayIcon->setIcon(networkStyle->getAppIcon());
     trayIcon->show();
@@ -705,7 +694,6 @@ void BitcoinGUI::createTrayIconMenu()
     trayIconMenu->addAction(openConfEditorAction);
     trayIconMenu->addAction(openMNConfEditorAction);
     trayIconMenu->addAction(showBackupsAction);
-    trayIconMenu->addAction(openBlockExplorerAction);
 #ifndef Q_OS_MAC // This is built-in on Mac
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
@@ -817,10 +805,6 @@ void BitcoinGUI::gotoMultiSendDialog()
     if (walletFrame)
         walletFrame->gotoMultiSendDialog();
 }
-void BitcoinGUI::gotoBlockExplorerPage()
-{
-    if (walletFrame) walletFrame->gotoBlockExplorerPage();
-}
 
 #endif // ENABLE_WALLET
 
@@ -852,7 +836,7 @@ void BitcoinGUI::setNumConnections(int count)
     }
     QIcon connectionItem = QIcon(icon).pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE);
     labelConnectionsIcon->setIcon(connectionItem);
-    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to BlocknetDX network", "", count));
+    labelConnectionsIcon->setToolTip(tr("%n active connection(s) to Liberty network", "", count));
 }
 
 void BitcoinGUI::setNumBlocks(int count)
@@ -982,7 +966,7 @@ void BitcoinGUI::setNumBlocks(int count)
 
 void BitcoinGUI::message(const QString& title, const QString& message, unsigned int style, bool* ret)
 {
-    QString strTitle = tr("BlocknetDX Core"); // default title
+    QString strTitle = tr("Liberty Core"); // default title
     // Default to information icon
     int nMBoxIcon = QMessageBox::Information;
     int nNotifyIcon = Notificator::Information;
@@ -1007,7 +991,7 @@ void BitcoinGUI::message(const QString& title, const QString& message, unsigned 
             break;
         }
     }
-    // Append title to "BlocknetDX - "
+    // Append title to "Liberty - "
     if (!msgType.isEmpty())
         strTitle += " - " + msgType;
 

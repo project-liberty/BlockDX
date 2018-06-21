@@ -6,7 +6,7 @@
 #define BITCOIN_QT_BITCOINGUI_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/blocknetdx-config.h"
+#include "config/liberty-config.h"
 #endif
 
 #include "amount.h"
@@ -23,7 +23,6 @@ class ClientModel;
 class NetworkStyle;
 class Notificator;
 class OptionsModel;
-class BlockExplorer;
 class RPCConsole;
 class SendCoinsRecipient;
 class UnitDisplayStatusBarControl;
@@ -120,7 +119,6 @@ private:
     QAction* openMNConfEditorAction;
     QAction* showBackupsAction;
     QAction* openAction;
-    QAction* openBlockExplorerAction;
     QAction* showHelpMessageAction;
     QAction* multiSendAction;
     QAction * xbridgeAction;
@@ -129,7 +127,6 @@ private:
     QMenu* trayIconMenu;
     Notificator* notificator;
     RPCConsole* rpcConsole;
-    BlockExplorer* explorerWindow;
 
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
@@ -200,8 +197,6 @@ private slots:
     void gotoHistoryPage();
     /** Switch to xbridge page */
     void gotoXBridgePage();
-    /** Switch to Explorer Page */
-    void gotoBlockExplorerPage();
     /** Switch to servicenode page */
     void gotoServicenodePage();
     /** Switch to receive coins page */

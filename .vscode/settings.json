@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "__bit_reference": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "algorithm": "cpp",
+        "hashtable": "cpp"
+    }
+}

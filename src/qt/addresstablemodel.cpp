@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Blocknet developers
+// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -306,7 +306,7 @@ void AddressTableModel::updateEntry(const QString& address,
     const QString& purpose,
     int status)
 {
-    // Update address book model from Blocknetdx core
+    // Update address book model from Liberty core
     priv->updateEntry(address, label, isMine, purpose, status);
 }
 

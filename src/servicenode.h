@@ -1,7 +1,7 @@
 
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Blocknet developers
+// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef SERVICENODE_H
@@ -118,7 +118,7 @@ public:
 };
 
 //
-// The Servicenode Class. For managing the Obfuscation process. It contains the input of the 5000 BLOCK, signature to prove
+// The Servicenode Class. For managing the Obfuscation process. It contains the input of the 5000 LBRT, signature to prove
 // it's the one who own that ip address and code for calculating the payment election.
 //
 class CServicenode

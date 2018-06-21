@@ -5,15 +5,15 @@ SUBDIRS = src
 GZIP_ENV="-9n"
 export PYTHONPATH
 
-BITCOIND_BIN=$(top_builddir)/src/blocknetdxd$(EXEEXT)
-BITCOIN_QT_BIN=$(top_builddir)/src/qt/blocknetdx-qt$(EXEEXT)
-BITCOIN_CLI_BIN=$(top_builddir)/src/blocknetdx-cli$(EXEEXT)
+BITCOIND_BIN=$(top_builddir)/src/libertyd$(EXEEXT)
+BITCOIN_QT_BIN=$(top_builddir)/src/qt/liberty-qt$(EXEEXT)
+BITCOIN_CLI_BIN=$(top_builddir)/src/liberty-cli$(EXEEXT)
 BITCOIN_WIN_INSTALLER=$(PACKAGE)-$(PACKAGE_VERSION)-win$(WINDOWS_BITS)-setup$(EXEEXT)
 
 empty :=
 space := $(empty) $(empty)
 
-OSX_APP=BlocknetDX-Qt.app
+OSX_APP=Liberty-Wallet.app
 OSX_VOLNAME = $(subst $(space),-,$(PACKAGE_NAME))
 OSX_DMG = $(OSX_VOLNAME).dmg
 OSX_BACKGROUND_SVG=background.svg
@@ -40,9 +40,9 @@ OSX_PACKAGING = $(OSX_DEPLOY_SCRIPT) $(OSX_FANCY_PLIST) $(OSX_INSTALLER_ICONS) \
   $(top_srcdir)/contrib/macdeploy/detached-sig-create.sh
 
 COVERAGE_INFO = baseline_filtered_combined.info baseline.info block_test.info \
-  leveldb_baseline.info test_blocknetdx_filtered.info total_coverage.info \
+  leveldb_baseline.info test_liberty_filtered.info total_coverage.info \
   baseline_filtered.info block_test_filtered.info \
-  leveldb_baseline_filtered.info test_blocknetdx_coverage.info test_blocknetdx.info
+  leveldb_baseline_filtered.info test_liberty_coverage.info test_liberty.info
 
 dist-hook:
 	-$(MAKE) -C $(top_distdir)/src/leveldb clean
@@ -84,7 +84,7 @@ $(OSX_APP)/Contents/Resources/bitcoin.icns: $(OSX_INSTALLER_ICONS)
 	$(MKDIR_P) $(@D)
 	$(INSTALL_DATA) $< $@
 
-$(OSX_APP)/Contents/MacOS/BlocknetDX-Qt: $(BITCOIN_QT_BIN)
+$(OSX_APP)/Contents/MacOS/liberty-qt: $(BITCOIN_QT_BIN)
 	$(MKDIR_P) $(@D)
 	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM)  $< $@
 
@@ -94,7 +94,7 @@ $(OSX_APP)/Contents/Resources/Base.lproj/InfoPlist.strings:
 
 OSX_APP_BUILT=$(OSX_APP)/Contents/PkgInfo $(OSX_APP)/Contents/Resources/empty.lproj \
   $(OSX_APP)/Contents/Resources/bitcoin.icns $(OSX_APP)/Contents/Info.plist \
-  $(OSX_APP)/Contents/MacOS/BlocknetDX-Qt $(OSX_APP)/Contents/Resources/Base.lproj/InfoPlist.strings
+  $(OSX_APP)/Contents/MacOS/liberty-qt $(OSX_APP)/Contents/Resources/Base.lproj/InfoPlist.strings
 
 osx_volname:
 	echo $(OSX_VOLNAME) >$@
@@ -119,7 +119,7 @@ $(APP_DIST_DIR)/Applications:
 	@rm -f $@
 	@cd $(@D); $(LN_S) /Applications $(@F)
 
-$(APP_DIST_EXTRAS): $(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/BlocknetDX-Qt
+$(APP_DIST_EXTRAS): $(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/liberty-qt
 
 $(OSX_DMG): $(APP_DIST_EXTRAS)
 	$(GENISOIMAGE) -no-cache-inodes -D -l -probe -V "$(OSX_VOLNAME)" -no-pad -r -dir-mode 0755 -apple -o $@ dist
@@ -134,7 +134,7 @@ $(APP_DIST_DIR)/.background/$(OSX_BACKGROUND_IMAGE): $(OSX_BACKGROUND_IMAGE_DPIF
 $(APP_DIST_DIR)/.DS_Store: $(OSX_DSSTORE_GEN)
 	$(PYTHON) $< "$@" "$(OSX_VOLNAME)"
 
-$(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/BlocknetDX-Qt: $(OSX_APP_BUILT) $(OSX_PACKAGING)
+$(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/liberty-qt: $(OSX_APP_BUILT) $(OSX_PACKAGING)
 	INSTALLNAMETOOL=$(INSTALLNAMETOOL)  OTOOL=$(OTOOL) STRIP=$(STRIP) $(PYTHON) $(OSX_DEPLOY_SCRIPT) $(OSX_APP) -translations-dir=$(QT_TRANSLATION_DIR) -add-qt-tr $(OSX_QT_TRANSLATIONS) -verbose 2
 
 deploydir: $(APP_DIST_EXTRAS)
@@ -174,16 +174,16 @@ leveldb_baseline_filtered.info: leveldb_baseline.info
 baseline_filtered_combined.info: leveldb_baseline_filtered.info baseline_filtered.info
 	$(LCOV) -a leveldb_baseline_filtered.info -a baseline_filtered.info -o $@
 
-test_blocknetdx.info: baseline_filtered_combined.info
+test_liberty.info: baseline_filtered_combined.info
 	$(MAKE) -C src/ check
-	$(LCOV) -c -d $(abs_builddir)/src -t test_blocknetdx -o $@
+	$(LCOV) -c -d $(abs_builddir)/src -t test_liberty -o $@
 	$(LCOV) -z -d $(abs_builddir)/src
 	$(LCOV) -z -d $(abs_builddir)/src/leveldb
 
-test_blocknetdx_filtered.info: test_blocknetdx.info
+test_liberty_filtered.info: test_liberty.info
 	$(LCOV) -r $< "/usr/include/*" -o $@
 
-block_test.info: test_blocknetdx_filtered.info
+block_test.info: test_liberty_filtered.info
 	$(MKDIR_P) qa/tmp
 	-@TIMEOUT=15 qa/pull-tester/run-bitcoind-for-test.sh $(JAVA) -jar $(JAVA_COMPARISON_TOOL) qa/tmp/compTool 0
 	$(LCOV) -c -d $(abs_builddir)/src --t BitcoinJBlockTest -o $@
@@ -193,13 +193,13 @@ block_test.info: test_blocknetdx_filtered.info
 block_test_filtered.info: block_test.info
 	$(LCOV) -r $< "/usr/include/*" -o $@
 
-test_blocknetdx_coverage.info: baseline_filtered_combined.info test_blocknetdx_filtered.info
-	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_blocknetdx_filtered.info -o $@
+test_liberty_coverage.info: baseline_filtered_combined.info test_liberty_filtered.info
+	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_liberty_filtered.info -o $@
 
-total_coverage.info:  baseline_filtered_combined.info test_blocknetdx_filtered.info block_test_filtered.info
-	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_blocknetdx_filtered.info -a block_test_filtered.info -o $@ | $(GREP) "\%" | $(AWK) '{ print substr($$3,2,50) "/" $$5 }' > coverage_percent.txt
+total_coverage.info:  baseline_filtered_combined.info test_liberty_filtered.info block_test_filtered.info
+	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_liberty_filtered.info -a block_test_filtered.info -o $@ | $(GREP) "\%" | $(AWK) '{ print substr($$3,2,50) "/" $$5 }' > coverage_percent.txt
 
-test_blocknetdx.coverage/.dirstamp:  test_blocknetdx_coverage.info
+test_liberty.coverage/.dirstamp:  test_liberty_coverage.info
 	$(GENHTML) -s $< -o $(@D)
 	@touch $@
 
@@ -207,11 +207,11 @@ total.coverage/.dirstamp: total_coverage.info
 	$(GENHTML) -s $< -o $(@D)
 	@touch $@
 
-cov: test_blocknetdx.coverage/.dirstamp total.coverage/.dirstamp
+cov: test_liberty.coverage/.dirstamp total.coverage/.dirstamp
 
 endif
 
-# BlocknetDX: disable the outdated comparison tool test
+# Liberty: disable the outdated comparison tool test
 # Ref https://github.com/bitcoin/bitcoin/issues/4545
 if USE_COMPARISON_TOOL
 check-local:
@@ -226,4 +226,4 @@ CLEANFILES = $(OSX_DMG) $(BITCOIN_WIN_INSTALLER)
 .INTERMEDIATE: $(COVERAGE_INFO)
 
 clean-local:
-	rm -rf test_blocknetdx.coverage/ total.coverage/ $(OSX_APP)
+	rm -rf test_liberty.coverage/ total.coverage/ $(OSX_APP)

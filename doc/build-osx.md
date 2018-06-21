@@ -1,6 +1,6 @@
 Mac OS X Build Instructions and Notes
 ====================================
-This guide will show you how to build blocknetdxd (headless client) for OSX.
+This guide will show you how to build libertyd (headless client) for OSX.
 
 Notes
 -----
@@ -40,14 +40,14 @@ Instructions: Homebrew
 
         brew install autoconf automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf qt5
 
-### Building `blocknetdxd`
+### Building `libertyd`
 
 1. Clone the github tree to get the source code and go into the directory.
 
-        git clone https://github.com/BlocknetDX/BlockDX.git
+        git clone https://github.com/project-liberty/BlockDX.git
         cd BlockDX
 
-2.  Build blocknetdxd:
+2.  Build libertyd:
 
         ./autogen.sh
         ./configure --with-gui=qt5
@@ -57,7 +57,7 @@ Instructions: Homebrew
 
         make check
 
-4.  (Optional) You can also install blocknetdxd to your path:
+4.  (Optional) You can also install libertyd to your path:
 
         make install
 
@@ -69,7 +69,7 @@ Download Qt Creator from http://www.qt.io/download/. Download the "community edi
 1. Make sure you installed everything through homebrew mentioned above
 2. Do a proper ./configure --with-gui=qt5 --enable-debug
 3. In Qt Creator do "New Project" -> Import Project -> Import Existing Project
-4. Enter "blocknetdx-qt" as project name, enter src/qt as location
+4. Enter "liberty-qt" as project name, enter src/qt as location
 5. Leave the file selection as it is
 6. Confirm the "summary page"
 7. In the "Projects" tab select "Manage Kits..."
@@ -79,11 +79,11 @@ Download Qt Creator from http://www.qt.io/download/. Download the "community edi
 
 Creating a release build
 ------------------------
-You can ignore this section if you are building `blocknetdxd` for your own use.
+You can ignore this section if you are building `libertyd` for your own use.
 
-blocknetdxd/blocknetdx-cli binaries are not included in the blocknetdx-Qt.app bundle.
+libertyd/liberty-cli binaries are not included in the Liberty-Wallet.app bundle.
 
-If you are building `blocknetdxd` or `blocknetdx-qt` for others, your build machine should be set up
+If you are building `libertyd` or `liberty-qt` for others, your build machine should be set up
 as follows for maximum compatibility:
 
 All dependencies should be compiled with these flags:
@@ -92,30 +92,30 @@ All dependencies should be compiled with these flags:
  -arch x86_64
  -isysroot $(xcode-select --print-path)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk
 
-Once dependencies are compiled, see release-process.md for how the BlocknetDX-Qt.app
+Once dependencies are compiled, see release-process.md for how the Liberty-Wallet.app
 bundle is packaged and signed to create the .dmg disk image that is distributed.
 
 Running
 -------
 
-It's now available at `./blocknetdxd`, provided that you are still in the `src`
+It's now available at `./libertyd`, provided that you are still in the `src`
 directory. We have to first create the RPC configuration file, though.
 
-Run `./blocknetdxd` to get the filename where it should be put, or just try these
+Run `./libertyd` to get the filename where it should be put, or just try these
 commands:
 
-    echo -e "rpcuser=blocknetdxrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/BlocknetDX/blocknetdx.conf"
-    chmod 600 "/Users/${USER}/Library/Application Support/BlocknetDX/blocknetdx.conf"
+    echo -e "rpcuser=libertyrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/Liberty/liberty.conf"
+    chmod 600 "/Users/${USER}/Library/Application Support/Liberty/liberty.conf"
 
 The next time you run it, it will start downloading the blockchain, but it won't
 output anything while it's doing this. This process may take several hours;
 you can monitor its process by looking at the debug.log file, like this:
 
-    tail -f $HOME/Library/Application\ Support/BlocknetDX/debug.log
+    tail -f $HOME/Library/Application\ Support/Liberty/debug.log
 
 Other commands:
 -------
 
-    ./blocknetdxd -daemon # to start the blocknetdx daemon.
-    ./blocknetdx-cli --help  # for a list of command-line options.
-    ./blocknetdx-cli help    # When the daemon is running, to get a list of RPC commands
+    ./libertyd -daemon # to start the liberty daemon.
+    ./liberty-cli --help  # for a list of command-line options.
+    ./liberty-cli help    # When the daemon is running, to get a list of RPC commands

@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Blocknet developers
+// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -282,27 +282,21 @@ void CServicenodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t /*
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) return;
-
-    bool hasPayment = true;
     CScript payee;
 
-    //spork
-    if (!servicenodePayments.GetBlockPayee(pindexPrev->nHeight + 1, payee)) {
-        //no servicenode detected
+    if (IsSporkActive(SPORK_8_SERVICENODE_PAYMENT_ENFORCEMENT) && 
+        !servicenodePayments.GetBlockPayee(pindexPrev->nHeight + 1, payee)) {
+        
         CServicenode* winningNode = mnodeman.GetCurrentServiceNode(1);
         if (winningNode) {
             payee = GetScriptForDestination(winningNode->pubKeyCollateralAddress.GetID());
-        } else {
-            LogPrintf("CreateNewBlock: Failed to detect servicenode to pay\n");
-            hasPayment = false;
-        }
+        } 
     }
 
     CAmount blockValue = GetBlockValue(pindexPrev->nHeight);
     CAmount servicenodePayment = GetServicenodePayment(pindexPrev->nHeight, blockValue);
 
-    if (hasPayment) {
-        if (fProofOfStake) {
+    if (fProofOfStake) {
             /**For Proof Of Stake vout[0] must be null
              * Stake reward can be split into many different outputs, so we must
              * use vout.size() to align with several different cases.
@@ -315,19 +309,23 @@ void CServicenodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t /*
 
             //subtract mn payment from the stake reward
             txNew.vout[i - 1].nValue -= servicenodePayment;
-        } else {
-            txNew.vout.resize(2);
-            txNew.vout[1].scriptPubKey = payee;
-            txNew.vout[1].nValue = servicenodePayment;
-            txNew.vout[0].nValue = blockValue - servicenodePayment;
+        } 
+        else /*PoW*/{
+            if(payee.size() > 0){
+                txNew.vout.resize(2);
+                txNew.vout[1].scriptPubKey = payee;
+                txNew.vout[1].nValue = servicenodePayment;
+                txNew.vout[0].nValue = blockValue - servicenodePayment;
+            }
+            else{
+                txNew.vout[0].nValue = blockValue; 
+            }
+
         }
 
-        CTxDestination address1;
-        ExtractDestination(payee, address1);
-        CBitcoinAddress address2(address1);
-
-        LogPrintf("Servicenode payment of %s to %s\n", FormatMoney(servicenodePayment).c_str(), address2.ToString().c_str());
-    }
+        //CTxDestination address1;
+        //ExtractDestination(payee, address1);
+        //CBitcoinAddress address2(address1);
 }
 
 int CServicenodePayments::GetMinServicenodePaymentsProto()

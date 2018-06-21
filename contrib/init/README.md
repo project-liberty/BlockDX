@@ -1,10 +1,10 @@
 Sample configuration files for:
 
-SystemD: blocknetdxd.service
-Upstart: blocknetdxd.conf
-OpenRC:  blocknetdxd.openrc
-         blocknetdxd.openrcconf
-CentOS:  blocknetdxd.init
+SystemD: libertyd.service
+Upstart: libertyd.conf
+OpenRC:  libertyd.openrc
+         libertyd.openrcconf
+CentOS:  libertyd.init
 
 have been made available to assist packagers in creating node packages here.
 

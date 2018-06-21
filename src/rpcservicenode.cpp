@@ -1,7 +1,7 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Blocknet developers
+// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -40,7 +40,7 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
 
-    // Parse Blocknetdx address
+    // Parse Liberty address
     CScript scriptPubKey = GetScriptForDestination(address);
 
     // Create and send the transaction
@@ -60,8 +60,8 @@ Value obfuscation(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() == 0)
         throw runtime_error(
-            "obfuscation <blocknetdxaddress> <amount>\n"
-            "blocknetdxaddress, reset, or auto (AutoDenominate)"
+            "obfuscation <libertyaddress> <amount>\n"
+            "libertyaddress, reset, or auto (AutoDenominate)"
             "<amount> is a real and will be rounded to the next 0.1" +
             HelpRequiringPassphrase());
 
@@ -82,14 +82,14 @@ Value obfuscation(const Array& params, bool fHelp)
 
     if (params.size() != 2)
         throw runtime_error(
-            "obfuscation <blocknetdxaddress> <amount>\n"
-            "blocknetdxaddress, denominate, or auto (AutoDenominate)"
+            "obfuscation <libertyaddress> <amount>\n"
+            "libertyaddress, denominate, or auto (AutoDenominate)"
             "<amount> is a real and will be rounded to the next 0.1" +
             HelpRequiringPassphrase());
 
     CBitcoinAddress address(params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Blocknetdx address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Liberty address");
 
     // Amount
     CAmount nAmount = AmountFromValue(params[1]);
@@ -149,7 +149,7 @@ Value servicenode(const Array& params, bool fHelp)
             "  genkey       - Generate new servicenodeprivkey\n"
             "  enforce      - Enforce servicenode payments\n"
             "  outputs      - Print servicenode compatible outputs\n"
-            "  start        - Start servicenode configured in blocknetdx.conf\n"
+            "  start        - Start servicenode configured in liberty.conf\n"
             "  start-alias  - Start single servicenode by assigned alias configured in servicenode.conf\n"
             "  start-<mode> - Start servicenodes configured in servicenode.conf (<mode>: 'all', 'missing', 'disabled')\n"
             "  status       - Print servicenode status information\n"
@@ -308,7 +308,7 @@ Value servicenode(const Array& params, bool fHelp)
                     CAmount snodeTxAmount = snodeTx.vout[snodeTxIdx].nValue;
                     if (snodeTxAmount != SERVICENODE_REQUIRED_AMOUNT*COIN) {
                         statusObj.push_back(Pair("result", "failed"));
-                        statusObj.push_back(Pair("errorMessage", strprintf("Servicenode input requires %d BLOCK. Only %f BLOCK was found",
+                        statusObj.push_back(Pair("errorMessage", strprintf("Servicenode input requires %d LBRT. Only %f LBRT was found",
                                                          SERVICENODE_REQUIRED_AMOUNT, (float)snodeTxAmount/(float)COIN)));
                         break;
                     }
@@ -407,7 +407,7 @@ Value servicenode(const Array& params, bool fHelp)
                 CAmount snodeTxAmount = snodeTx.vout[nIndex].nValue;
                 if (snodeTxAmount != SERVICENODE_REQUIRED_AMOUNT * COIN) {
                     success = false;
-                    errorMessage = strprintf("Servicenode input requires %d BLOCK. Only %f BLOCK was found",
+                    errorMessage = strprintf("Servicenode input requires %d LBRT. Only %f LBRT was found",
                                                        SERVICENODE_REQUIRED_AMOUNT, (float) snodeTxAmount / (float) COIN);
                 }
                 // Verify collateral input age
@@ -654,7 +654,7 @@ Value servicenodelist(const Array& params, bool fHelp)
             "    \"txhash\": \"hash\",       (string) Collateral transaction hash\n"
             "    \"outidx\": n,              (numeric) Collateral transaction output index\n"
             "    \"status\": s,              (string) Status (ENABLED/EXPIRED/REMOVE/etc)\n"
-            "    \"addr\": \"addr\",         (string) Servicenode BlocknetDX address\n"
+            "    \"addr\": \"addr\",         (string) Servicenode Liberty address\n"
             "    \"version\": v,             (numeric) Servicenode protocol version\n"
             "    \"lastseen\": ttt,          (numeric) The time in seconds since epoch (Jan 1 1970 GMT) of the last seen\n"
             "    \"activetime\": ttt,        (numeric) The time in seconds since epoch (Jan 1 1970 GMT) servicenode has been active\n"

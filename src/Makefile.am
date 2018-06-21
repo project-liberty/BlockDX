@@ -68,15 +68,15 @@ bin_PROGRAMS =
 TESTS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += blocknetdxd
+  bin_PROGRAMS += libertyd
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += blocknetdx-cli blocknetdx-tx
+  bin_PROGRAMS += liberty-cli liberty-tx
 endif
 
 .PHONY: FORCE
-# blocknetdx core #
+# liberty core #
 BITCOIN_CORE_H = \
   activeservicenode.h \
   addrman.h \
@@ -193,7 +193,7 @@ obj/build.h: FORCE
 	  $(abs_top_srcdir)
 libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
-# server: shared between blocknetdxd and blocknetdx-qt
+# server: shared between libertyd and liberty-qt
 libbitcoin_server_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS)
 libbitcoin_server_a_SOURCES = \
   addrman.cpp \
@@ -237,7 +237,7 @@ libbitcoin_zmq_a_SOURCES = \
   zmq/zmqpublishnotifier.cpp
 endif
 
-# wallet: shared between blocknetdxd and blocknetdx-qt, but only linked
+# wallet: shared between libertyd and liberty-qt, but only linked
 # when wallet enabled
 
 libbitcoin_wallet_a_CFLAGS = -fPIC
@@ -311,7 +311,7 @@ univalue_libbitcoin_univalue_a_SOURCES = \
   univalue/univalue_escapes.h \
   univalue/univalue.h
 
-# common: shared between blocknetdxd, and blocknetdx-qt and non-server tools
+# common: shared between libertyd, and liberty-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_common_a_SOURCES = \
   allocators.cpp \
@@ -431,7 +431,7 @@ libbitcoin_util_a_SOURCES += compat/glibc_compat.cpp
 libbitcoin_util_a_SOURCES += compat/glibcxx_compat.cpp
 endif
 
-# cli: shared between blocknetdx-cli and blocknetdx-qt
+# cli: shared between liberty-cli and liberty-qt
 libbitcoin_cli_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_cli_a_SOURCES = \
   rpcclient.cpp \
@@ -441,7 +441,7 @@ nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
 # bitcoind binary #
-blocknetdxd_LDADD = \
+libertyd_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UNIVALUE) \
@@ -454,26 +454,26 @@ blocknetdxd_LDADD = \
   $(LIBBITCOIN_CLI)
 
 if ENABLE_ZMQ
-blocknetdxd_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
+libertyd_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
 endif
 
 if ENABLE_WALLET
-blocknetdxd_LDADD += libbitcoin_wallet.a
+libertyd_LDADD += libbitcoin_wallet.a
 endif
-blocknetdxd_SOURCES = blocknetdxd.cpp
+libertyd_SOURCES = libertyd.cpp
 #
 
 if TARGET_WINDOWS
-blocknetdxd_SOURCES += blocknetdxd-res.rc
+libertyd_SOURCES += libertyd-res.rc
 endif
 
-blocknetdxd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)
-blocknetdxd_CPPFLAGS = $(BITCOIN_INCLUDES)
-blocknetdxd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+libertyd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)
+libertyd_CPPFLAGS = $(BITCOIN_INCLUDES)
+libertyd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 
-# blocknetdx-cli binary #
-blocknetdx_cli_LDADD = \
+# liberty-cli binary #
+liberty_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBBITCOIN_UTIL) \
   $(BOOST_LIBS) \
@@ -482,14 +482,14 @@ blocknetdx_cli_LDADD = \
   $(LIBBITCOIN_CRYPTO)
 
 
-blocknetdx_cli_SOURCES = \
-  blocknetdx-cli.cpp
+liberty_cli_SOURCES = \
+  liberty-cli.cpp
 
-blocknetdx_cli_CPPFLAGS = $(BITCOIN_INCLUDES)
+liberty_cli_CPPFLAGS = $(BITCOIN_INCLUDES)
 #
 
-# blocknetdx-tx binary #
-blocknetdx_tx_LDADD = \
+# liberty-tx binary #
+liberty_tx_LDADD = \
   $(LIBBITCOIN_UNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UTIL) \
@@ -498,15 +498,15 @@ blocknetdx_tx_LDADD = \
   $(BOOST_LIBS) \
   $(CRYPTO_LIBS)
 
-blocknetdx_tx_SOURCES = blocknetdx-tx.cpp
-blocknetdx_tx_CPPFLAGS = $(BITCOIN_INCLUDES)
+liberty_tx_SOURCES = liberty-tx.cpp
+liberty_tx_CPPFLAGS = $(BITCOIN_INCLUDES)
 #
-blocknetdx_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+liberty_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-blocknetdx_cli_SOURCES += blocknetdx-cli-res.rc
+liberty_cli_SOURCES += liberty-cli-res.rc
 endif
-blocknetdx_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+liberty_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if BUILD_BITCOIN_LIBS
 include_HEADERS = script/bitcoinconsensus.h

@@ -36,7 +36,7 @@ void XBridgeTransactionsView::setupUi()
 {
     QVBoxLayout * vbox = new QVBoxLayout;
 
-    QLabel * l = new QLabel(tr("Blocknet Decentralized Exchange"), this);
+    QLabel * l = new QLabel(tr("Liberty Decentralized Exchange"), this);
     vbox->addWidget(l);
 
     m_transactionsProxy.setSourceModel(&m_txModel);

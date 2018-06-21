@@ -1,12 +1,12 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Blocknet developers
+// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/blocknetdx-config.h"
+#include "config/liberty-config.h"
 #endif
 
 #include "optionsmodel.h"
@@ -62,7 +62,7 @@ void OptionsModel::Init()
 
     // Display
     if (!settings.contains("nDisplayUnit"))
-        settings.setValue("nDisplayUnit", BitcoinUnits::BLOCK);
+        settings.setValue("nDisplayUnit", BitcoinUnits::LBRT);
     nDisplayUnit = settings.value("nDisplayUnit").toInt();
 
     if (!settings.contains("strThirdPartyTxUrls"))
@@ -76,11 +76,11 @@ void OptionsModel::Init()
     if (!settings.contains("nObfuscationRounds"))
         settings.setValue("nObfuscationRounds", 2);
 
-    if (!settings.contains("nAnonymizeBlocknetdxAmount"))
-        settings.setValue("nAnonymizeBlocknetdxAmount", 1000);
+    if (!settings.contains("nAnonymizeLibertyAmount"))
+        settings.setValue("nAnonymizeLibertyAmount", 1000);
 
     nObfuscationRounds = settings.value("nObfuscationRounds").toLongLong();
-    nAnonymizeBlocknetdxAmount = settings.value("nAnonymizeBlocknetdxAmount").toLongLong();
+    nAnonymizeLibertyAmount = settings.value("nAnonymizeLibertyAmount").toLongLong();
 
     if (!settings.contains("fShowServicenodesTab"))
         settings.setValue("fShowServicenodesTab", servicenodeConfig.getCount());
@@ -147,8 +147,8 @@ void OptionsModel::Init()
 
     if (settings.contains("nObfuscationRounds"))
         SoftSetArg("-obfuscationrounds", settings.value("nObfuscationRounds").toString().toStdString());
-    if (settings.contains("nAnonymizeBlocknetdxAmount"))
-        SoftSetArg("-anonymizeblocknetdxamount", settings.value("nAnonymizeBlocknetdxAmount").toString().toStdString());
+    if (settings.contains("nAnonymizeLibertyAmount"))
+        SoftSetArg("-anonymizelibertyamount", settings.value("nAnonymizeLibertyAmount").toString().toStdString());
 
     language = settings.value("language").toString();
 }
@@ -159,7 +159,7 @@ void OptionsModel::Reset()
 
     // Remove all entries from our QSettings object
     settings.clear();
-    resetSettings = true; // Needed in blocknetdx.cpp during shotdown to also remove the window positions
+    resetSettings = true; // Needed in liberty.cpp during shotdown to also remove the window positions
 
     // default setting for OptionsModel::StartAtStartup - disabled
     if (GUIUtil::GetStartOnSystemStartup())
@@ -228,8 +228,8 @@ QVariant OptionsModel::data(const QModelIndex& index, int role) const
             return settings.value("nThreadsScriptVerif");
         case ObfuscationRounds:
             return QVariant(nObfuscationRounds);
-        case AnonymizeBlocknetdxAmount:
-            return QVariant(nAnonymizeBlocknetdxAmount);
+        case AnonymizeLibertyAmount:
+            return QVariant(nAnonymizeLibertyAmount);
         case Listen:
             return settings.value("fListen");
         default:
@@ -338,10 +338,10 @@ bool OptionsModel::setData(const QModelIndex& index, const QVariant& value, int 
             settings.setValue("nObfuscationRounds", nObfuscationRounds);
             emit obfuscationRoundsChanged(nObfuscationRounds);
             break;
-        case AnonymizeBlocknetdxAmount:
-            nAnonymizeBlocknetdxAmount = value.toInt();
-            settings.setValue("nAnonymizeBlocknetdxAmount", nAnonymizeBlocknetdxAmount);
-            emit anonymizeBlocknetdxAmountChanged(nAnonymizeBlocknetdxAmount);
+        case AnonymizeLibertyAmount:
+            nAnonymizeLibertyAmount = value.toInt();
+            settings.setValue("nAnonymizeLibertyAmount", nAnonymizeLibertyAmount);
+            emit anonymizeLibertyAmountChanged(nAnonymizeLibertyAmount);
             break;
         case CoinControlFeatures:
             fCoinControlFeatures = value.toBool();

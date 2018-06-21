@@ -442,10 +442,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Buy BLOCK</string>
+      <string>Buy LBRT</string>
      </property>
      <property name="icon">
-      <iconset resource="../blocknetdx.qrc">
+      <iconset resource="../liberty.qrc">
        <normaloff>:/icons/bitcoin</normaloff>:/icons/bitcoin</iconset>
      </property>
     </widget>
@@ -512,7 +512,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>BLOCK</string>
+      <string>LBRT</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_5">
@@ -1704,7 +1704,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>BLOCK</string>
+      <string>LBRT</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="UnitsInputBLOCK">
@@ -1751,10 +1751,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Sell BLOCK</string>
+      <string>Sell LBRT</string>
      </property>
      <property name="icon">
-      <iconset resource="../blocknetdx">
+      <iconset resource="../liberty">
        <normaloff>:/icons/bitcoin</normaloff>:/icons/bitcoin</iconset>
      </property>
     </widget>
@@ -1777,7 +1777,7 @@
          </font>
         </property>
         <property name="text">
-         <string>BLOCK Available:</string>
+         <string>LBRT Available:</string>
         </property>
        </widget>
       </item>
@@ -2221,7 +2221,7 @@
          </font>
         </property>
         <property name="text">
-         <string>BLOCK</string>
+         <string>LBRT</string>
         </property>
        </widget>
       </item>
@@ -2762,7 +2762,7 @@
       </font>
      </property>
      <property name="text">
-      <string>BLOCK Balance:</string>
+      <string>LBRT Balance:</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_12">
@@ -2813,7 +2813,7 @@
       </font>
      </property>
      <property name="text">
-      <string>BLOCK Available:</string>
+      <string>LBRT Available:</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_14">
@@ -2832,7 +2832,7 @@
       </font>
      </property>
      <property name="text">
-      <string>BLOCK Pending:</string>
+      <string>LBRT Pending:</string>
      </property>
     </widget>
     <widget class="QLabel" name="BLOCKPendingLabel">
@@ -2928,7 +2928,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Bittrex BLOCK Deposit Address:</string>
+      <string>Bittrex LBRT Deposit Address:</string>
      </property>
     </widget>
     <widget class="QPushButton" name="GenDepositBTN">
@@ -2941,10 +2941,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Generate Blocknetdx Deposit Address</string>
+      <string>Generate Liberty Deposit Address</string>
      </property>
      <property name="icon">
-      <iconset resource="../blocknetdx.qrc">
+      <iconset resource="../liberty.qrc">
        <normaloff>:/icons/bitcoin</normaloff>:/icons/bitcoin</iconset>
      </property>
     </widget>
@@ -3155,7 +3155,7 @@
        <string notr="true">border: 1px solid #61696c;margin-left:4px;</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnConvertBlocknetdx">
+     <widget class="QPushButton" name="btnConvertLiberty">
       <property name="geometry">
        <rect>
         <x>260</x>
@@ -3206,7 +3206,7 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap resource="../blocknetdx.qrc">:/icons/transaction_1</pixmap>
+       <pixmap resource="../liberty.qrc">:/icons/transaction_1</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -3253,7 +3253,7 @@
       <string>Update API Keys</string>
      </property>
      <property name="icon">
-      <iconset resource="../blocknetdx.qrc">
+      <iconset resource="../liberty.qrc">
        <normaloff>:/icons/bitcoin</normaloff>:/icons/bitcoin</iconset>
      </property>
     </widget>
@@ -3408,7 +3408,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="../blocknetdx.qrc"/>
+  <include location="../liberty.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -18,7 +18,6 @@ class SendCoinsDialog;
 class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
-class BlockExplorer;
 class MessagesDialog;
 
 QT_BEGIN_NAMESPACE
@@ -64,7 +63,6 @@ private:
     QWidget* transactionsPage;
     ReceiveCoinsDialog* receiveCoinsPage;
     SendCoinsDialog* sendCoinsPage;
-    BlockExplorer* explorerWindow;
     ServicenodeList* servicenodeListPage;
 
     TransactionView* transactionView;
@@ -85,8 +83,6 @@ public slots:
     void gotoXBridgePage();
     /** Switch to servicenode page */
     void gotoServicenodePage();
-    /** Switch to explorer page */
-    void gotoBlockExplorerPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
@@ -129,7 +125,7 @@ public slots:
     /** Show progress dialog e.g. for rescan */
     void showProgress(const QString& title, int nProgress);
 
-    /** Update selected BLOCK amount from transactionview */
+    /** Update selected LBRT amount from transactionview */
     void trxAmount(QString amount);
 
 signals:

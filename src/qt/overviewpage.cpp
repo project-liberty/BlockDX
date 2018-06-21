@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Blocknet developers
+// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -33,7 +33,7 @@ class TxViewDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
 public:
-    TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::BLOCK)
+    TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::LBRT)
     {
     }
 
@@ -275,7 +275,7 @@ void OverviewPage::setWalletModel(WalletModel* model)
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
     }
 
-    // update the display unit, to not use the default ("BLOCK")
+    // update the display unit, to not use the default ("LBRT")
     updateDisplayUnit();
 }
 
@@ -314,15 +314,15 @@ void OverviewPage::updateObfuscationProgress()
     if (!pwalletMain) return;
 
     QString strAmountAndRounds;
-    QString strAnonymizeBlocknetdxAmount = BitcoinUnits::formatHtmlWithUnit(nDisplayUnit, nAnonymizeBlocknetdxAmount * COIN, false, BitcoinUnits::separatorAlways);
+    QString strAnonymizeLibertyAmount = BitcoinUnits::formatHtmlWithUnit(nDisplayUnit, nAnonymizeLibertyAmount * COIN, false, BitcoinUnits::separatorAlways);
 
     if (currentBalance == 0) {
         ui->obfuscationProgress->setValue(0);
         ui->obfuscationProgress->setToolTip(tr("No inputs detected"));
 
         // when balance is zero just show info from settings
-        strAnonymizeBlocknetdxAmount = strAnonymizeBlocknetdxAmount.remove(strAnonymizeBlocknetdxAmount.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
-        strAmountAndRounds = strAnonymizeBlocknetdxAmount + " / " + tr("%n Rounds", "", nObfuscationRounds);
+        strAnonymizeLibertyAmount = strAnonymizeLibertyAmount.remove(strAnonymizeLibertyAmount.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
+        strAmountAndRounds = strAnonymizeLibertyAmount + " / " + tr("%n Rounds", "", nObfuscationRounds);
 
         ui->labelAmountRounds->setToolTip(tr("No inputs detected"));
         ui->labelAmountRounds->setText(strAmountAndRounds);
@@ -349,20 +349,20 @@ void OverviewPage::updateObfuscationProgress()
     CAmount nMaxToAnonymize = nAnonymizableBalance + currentAnonymizedBalance + nDenominatedUnconfirmedBalance;
 
     // If it's more than the anon threshold, limit to that.
-    if (nMaxToAnonymize > nAnonymizeBlocknetdxAmount * COIN) nMaxToAnonymize = nAnonymizeBlocknetdxAmount * COIN;
+    if (nMaxToAnonymize > nAnonymizeLibertyAmount * COIN) nMaxToAnonymize = nAnonymizeLibertyAmount * COIN;
 
     if (nMaxToAnonymize == 0) return;
 
-    if (nMaxToAnonymize >= nAnonymizeBlocknetdxAmount * COIN) {
+    if (nMaxToAnonymize >= nAnonymizeLibertyAmount * COIN) {
         ui->labelAmountRounds->setToolTip(tr("Found enough compatible inputs to anonymize %1")
-                                              .arg(strAnonymizeBlocknetdxAmount));
-        strAnonymizeBlocknetdxAmount = strAnonymizeBlocknetdxAmount.remove(strAnonymizeBlocknetdxAmount.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
-        strAmountAndRounds = strAnonymizeBlocknetdxAmount + " / " + tr("%n Rounds", "", nObfuscationRounds);
+                                              .arg(strAnonymizeLibertyAmount));
+        strAnonymizeLibertyAmount = strAnonymizeLibertyAmount.remove(strAnonymizeLibertyAmount.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
+        strAmountAndRounds = strAnonymizeLibertyAmount + " / " + tr("%n Rounds", "", nObfuscationRounds);
     } else {
         QString strMaxToAnonymize = BitcoinUnits::formatHtmlWithUnit(nDisplayUnit, nMaxToAnonymize, false, BitcoinUnits::separatorAlways);
         ui->labelAmountRounds->setToolTip(tr("Not enough compatible inputs to anonymize <span style='color:red;'>%1</span>,<br>"
                                              "will anonymize <span style='color:red;'>%2</span> instead")
-                                              .arg(strAnonymizeBlocknetdxAmount)
+                                              .arg(strAnonymizeLibertyAmount)
                                               .arg(strMaxToAnonymize));
         strMaxToAnonymize = strMaxToAnonymize.remove(strMaxToAnonymize.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
         strAmountAndRounds = "<span style='color:red;'>" +
@@ -533,7 +533,7 @@ void OverviewPage::toggleObfuscation()
 
         /* show obfuscation configuration if client has defaults set */
 
-        if (nAnonymizeBlocknetdxAmount == 0) {
+        if (nAnonymizeLibertyAmount == 0) {
             ObfuscationConfig dlg(this);
             dlg.setModel(walletModel);
             dlg.exec();

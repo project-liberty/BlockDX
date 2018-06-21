@@ -9,8 +9,8 @@
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between blocknetdx-cli and blocknetdxd)
- * of a given instance of the Blocknetdx system.
+ * CBaseChainParams defines the base parameters (shared between liberty-cli and libertyd)
+ * of a given instance of the Liberty system.
  */
 class CBaseChainParams
 {

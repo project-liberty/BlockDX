@@ -1,5 +1,5 @@
 // Copyright (c) 2017 Michael Madgett
-// Copyright (c) 2017 The Blocknet developers
+// Copyright (c) 2017 The Liberty developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 

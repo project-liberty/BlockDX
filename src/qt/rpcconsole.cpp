@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Blocknet developers
+// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -273,44 +273,46 @@ RPCConsole::~RPCConsole()
 
 bool RPCConsole::eventFilter(QObject* obj, QEvent* event)
 {
-    if (event->type() == QEvent::KeyPress) // Special key handling
+    if(event->type() == QEvent::KeyPress) // Special key handling
     {
-        QKeyEvent* keyevt = static_cast<QKeyEvent*>(event);
+        QKeyEvent *keyevt = static_cast<QKeyEvent*>(event);
         int key = keyevt->key();
         Qt::KeyboardModifiers mod = keyevt->modifiers();
-        switch (key) {
-        case Qt::Key_Up:
-            if (obj == ui->lineEdit) {
-                browseHistory(-1);
-                return true;
-            }
-            break;
-        case Qt::Key_Down:
-            if (obj == ui->lineEdit) {
-                browseHistory(1);
-                return true;
-            }
-            break;
+        switch(key)
+        {
+        case Qt::Key_Up: if(obj == ui->lineEdit) { browseHistory(-1); return true; } break;
+        case Qt::Key_Down: if(obj == ui->lineEdit) { browseHistory(1); return true; } break;
         case Qt::Key_PageUp: /* pass paging keys to messages widget */
         case Qt::Key_PageDown:
-            if (obj == ui->lineEdit) {
+            if(obj == ui->lineEdit)
+            {
                 QApplication::postEvent(ui->messagesWidget, new QKeyEvent(*keyevt));
+                return true;
+            }
+            break;
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+            // forward these events to lineEdit
+            if(obj == autoCompleter->popup()) {
+                QApplication::postEvent(ui->lineEdit, new QKeyEvent(*keyevt));
                 return true;
             }
             break;
         default:
             // Typing in messages widget brings focus to line edit, and redirects key there
             // Exclude most combinations and keys that emit no text, except paste shortcuts
-            if (obj == ui->messagesWidget && ((!mod && !keyevt->text().isEmpty() && key != Qt::Key_Tab) ||
-                                                 ((mod & Qt::ControlModifier) && key == Qt::Key_V) ||
-                                                 ((mod & Qt::ShiftModifier) && key == Qt::Key_Insert))) {
+            if(obj == ui->messagesWidget && (
+                  (!mod && !keyevt->text().isEmpty() && key != Qt::Key_Tab) ||
+                  ((mod & Qt::ControlModifier) && key == Qt::Key_V) ||
+                  ((mod & Qt::ShiftModifier) && key == Qt::Key_Insert)))
+            {
                 ui->lineEdit->setFocus();
                 QApplication::postEvent(ui->lineEdit, new QKeyEvent(*keyevt));
                 return true;
             }
         }
     }
-    return QDialog::eventFilter(obj, event);
+    return QWidget::eventFilter(obj, event);
 }
 
 void RPCConsole::setClientModel(ClientModel* model)
@@ -353,6 +355,18 @@ void RPCConsole::setClientModel(ClientModel* model)
         ui->startupTime->setText(model->formatClientStartupTime());
 
         ui->networkName->setText(QString::fromStdString(Params().NetworkIDString()));
+
+        //Setup autocomplete and attach it
+        QStringList wordList;
+        std::vector<std::string> commandList = tableRPC.listCommands();
+        for (size_t i = 0; i < commandList.size(); ++i)
+        {
+            wordList << commandList[i].c_str();
+        }
+
+        autoCompleter = new QCompleter(wordList, this);
+        ui->lineEdit->setCompleter(autoCompleter);
+        autoCompleter->popup()->installEventFilter(this);
     }
 }
 
@@ -457,7 +471,7 @@ void RPCConsole::clear()
         "td.cmd-error { color: red; } "
         "b { color: #006060; } ");
 
-    message(CMD_REPLY, (tr("Welcome to the BlocknetDX RPC console.") + "<br>" +
+    message(CMD_REPLY, (tr("Welcome to the Liberty RPC console.") + "<br>" +
                            tr("Use up and down arrows to navigate history, and <b>Ctrl-L</b> to clear screen.") + "<br>" +
                            tr("Type <b>help</b> for an overview of available commands.")),
         true);

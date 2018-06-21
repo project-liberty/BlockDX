@@ -23,7 +23,7 @@ struct CDNSSeedData {
 
 /**
  * CChainParams defines various tweakable parameters of a given instance of the
- * BlocknetDX system. There are three: the main network on which people trade goods
+ * Liberty system. There are three: the main network on which people trade goods
  * and services, the public test network which gets reset from time to time and
  * a regression test mode which is intended for private networks only. It has
  * minimal difficulty to ensure that blocks can be found instantly.
@@ -91,7 +91,6 @@ public:
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     std::string SporkKey() const { return strSporkKey; }
     std::string ObfuscationPoolDummyAddress() const { return strObfuscationPoolDummyAddress; }
-    int64_t StartServicenodePayments() const { return nStartServicenodePayments; }
     CBaseChainParams::Network NetworkID() const { return networkID; }
 
 protected:
@@ -133,7 +132,6 @@ protected:
     int nPoolMaxTransactions;
     std::string strSporkKey;
     std::string strObfuscationPoolDummyAddress;
-    int64_t nStartServicenodePayments;
 };
 
 /** 

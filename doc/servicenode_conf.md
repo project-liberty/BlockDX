@@ -2,9 +2,9 @@ Multi servicenode config
 =======================
 
 The multi servicenode config allows you to control multiple servicenodes from a single wallet. The wallet needs to have a valid collateral output of 10000 coins for each servicenode. To use this, place a file named servicenode.conf in the data directory of your install:
- * Windows: %APPDATA%\Blocknetdx\
- * Mac OS: ~/Library/Application Support/Blocknetdx/
- * Unix/Linux: ~/.blocknetdx/
+ * Windows: %APPDATA%\Liberty\
+ * Mac OS: ~/Library/Application Support/Liberty/
+ * Unix/Linux: ~/.liberty/
 
 The new servicenode.conf format consists of a space seperated text file. Each line consisting of an alias, IP address followed by port, servicenode private key, collateral output transaction id, collateral output index, donation address and donation percentage (the latter two are optional and should be in format "address:percentage").
 

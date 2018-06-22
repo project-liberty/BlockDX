@@ -3,7 +3,7 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2014-2017 The PPCoin developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Blocknet developers
+// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -45,7 +45,7 @@ using namespace boost;
 using namespace std;
 
 #if defined(NDEBUG)
-#error "BlocknetDX cannot be compiled without assertions."
+#error "Liberty cannot be compiled without assertions."
 #endif
 
 /**
@@ -1659,24 +1659,16 @@ int64_t GetBlockValue(int nHeight)
             return 250000 * COIN;
     }
 
-    // Reduce Reward starting year 1
     if (nHeight == 0) {
-        nSubsidy = 4160024 * COIN; }
-    /* TBD/Review servicenode returns before changing
-    } else if (nHeight < 525600 && nHeight > 0) {
-	nSubsidy = 1 * COIN;
-    } else if (nHeight <= 1051200 && nHeight >= 525600) {
-	nSubsidy = 0.75 * COIN;
-    } else if (nHeight <= 1576800 && nHeight >= 1051201) {
-	nSubsidy = 0.50 * COIN;
-    } else if (nHeight >= 1576801) {
-	nSubsidy = 0.25 * COIN;
-    } */ else {
+            nSubsidy = 1250000 * COIN;
+    } else {	
         nSubsidy = 1 * COIN;
+    }	     
+	 
+    if(IsSporkActive(SPORK_19_BLOCK_REWARD)){
+        return static_cast<CAmount>(GetSporkValue(SPORK_19_BLOCK_REWARD_AMOUNT) * COIN);
     }
-
     return nSubsidy;
-
 }
 
 int64_t GetServicenodePayment(int nHeight, int64_t blockValue, int nServicenodeCount)
@@ -2095,7 +2087,7 @@ static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void ThreadScriptCheck()
 {
-    RenameThread("blocknetdx-scriptch");
+    RenameThread("liberty-scriptch");
     scriptcheckqueue.Thread();
 }
 
@@ -3352,8 +3344,9 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
 
     // Enforce block.nVersion=2 rule that the coinbase starts with serialized block height
     // if 750 of the last 1,000 blocks are version 2 or greater (51/100 if testnet):
-    if (block.nVersion >= 2 &&
+    if (block.nVersion >= 2 && nHeight >= 2000 &&
         CBlockIndex::IsSuperMajority(2, pindexPrev, Params().EnforceBlockUpgradeMajority())) {
+
         CScript expect = CScript() << nHeight;
         if (block.vtx[0].vin[0].scriptSig.size() < expect.size() ||
             !std::equal(expect.begin(), expect.end(), block.vtx[0].vin[0].scriptSig.begin())) {
@@ -3628,7 +3621,17 @@ bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex
 
     return true;
 }
+/* Calculate the amount of disk space the block & undo files currently use */
+uint64_t CalculateCurrentUsage()
+{
+    LOCK(cs_LastBlockFile);
 
+    uint64_t retval = 0;
+    for (const CBlockFileInfo &file : vinfoBlockFile) {
+        retval += file.nSize + file.nUndoSize;
+    }
+    return retval;
+}
 
 bool AbortNode(const std::string& strMessage, const std::string& userMessage)
 {

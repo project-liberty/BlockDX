@@ -1,5 +1,5 @@
 # Sample build via docker cli:
-# docker build --build-arg cores=4 -t blocknetdx/devbuilds:3.9.10 .
+# docker build --build-arg cores=4 -t liberty/devbuilds:3.9.10 .
 FROM ubuntu:trusty
 
 ARG cores=32
@@ -39,23 +39,23 @@ RUN mkdir -p /tmp/berkeley \
   && make install
 
 # Copy source files
-COPY . /opt/blocknetdx/BlockDX/
+COPY . /opt/liberty/BlockDX/
 
 # Build source
-RUN mkdir -p /opt/blocknetdx/BlockDX \
+RUN mkdir -p /opt/liberty/BlockDX \
   && mkdir -p /opt/blockchain/config \
   && mkdir -p /opt/blockchain/data \
-  && ln -s /opt/blockchain/config /root/.blocknetdx \
-  && cd /opt/blocknetdx/BlockDX \
+  && ln -s /opt/blockchain/config /root/.liberty \
+  && cd /opt/liberty/BlockDX \
   && chmod +x ./autogen.sh; sync \
   && ./autogen.sh \
   && ./configure LDFLAGS="-L/tmp/berkeley/lib/" CPPFLAGS="-I/tmp/berkeley/include/" --with-gui=qt5 --enable-hardening \
   && echo "Building with cores: $ecores" \
   && make -j$ecores \
   && make install \
-  && rm -rf /opt/blocknetdx/ /tmp/berkeley/*
+  && rm -rf /opt/liberty/ /tmp/berkeley/*
 
-# Write default blocknetdx.conf (can be overridden on commandline)
+# Write default liberty.conf (can be overridden on commandline)
 RUN echo "datadir=/opt/blockchain/data    \n\
                                           \n\
 dbcache=256                               \n\
@@ -74,7 +74,7 @@ rpcallowip=0.0.0.0/0                      \n\
 rpctimeout=15                             \n\
 rpcclienttimeout=15                       \n\
 rpcuser=test                              \n\
-rpcpassword=user" > /opt/blockchain/config/blocknetdx.conf
+rpcpassword=user" > /opt/blockchain/config/liberty.conf
 
 WORKDIR /opt/blockchain/
 VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
@@ -82,5 +82,5 @@ VOLUME ["/opt/blockchain/config", "/opt/blockchain/data"]
 # Port, RPC, Test Port, Test RPC
 EXPOSE 41412 41414 41474 41419
 
-CMD ["blocknetdxd", "-daemon=0"]
+CMD ["libertyd", "-daemon=0"]
 

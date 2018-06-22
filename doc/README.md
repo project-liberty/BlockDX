@@ -1,36 +1,36 @@
-BlocknetDX Core
+Liberty Core
 =====================
 
 Setup
 ---------------------
-[BlocknetDX Core](https://github.com/BlocknetDX/BlockDX/releases/tag/v3.7.36) is the original BlocknetDX client and it builds the backbone of the network. However, it downloads and stores the entire history of BlocknetDX transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
+[Liberty Core](https://github.com/project-liberty/BlockDX/releases/tag/v3.7.36) is the original Liberty client and it builds the backbone of the network. However, it downloads and stores the entire history of Liberty transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
 
 Running
 ---------------------
-The following are some helpful notes on how to run BlocknetDX on your native platform.
+The following are some helpful notes on how to run Liberty on your native platform.
 
 ### Unix
 
 Unpack the files into a directory and run:
 
-- bin/32/blocknetdx-qt (GUI, 32-bit) or bin/32/blocknetdxd (headless, 32-bit)
-- bin/64/blocknetdx-qt (GUI, 64-bit) or bin/64/blocknetdxd (headless, 64-bit)
+- bin/32/liberty-qt (GUI, 32-bit) or bin/32/libertyd (headless, 32-bit)
+- bin/64/liberty-qt (GUI, 64-bit) or bin/64/libertyd (headless, 64-bit)
 
 ### Windows
 
-Unpack the files into a directory, and then run blocknetdx-qt.exe.
+Unpack the files into a directory, and then run liberty-qt.exe.
 
 ### OSX
 
-Drag BlocknetDX-Qt to your applications folder, and then run BlocknetDX-Qt.
+Drag liberty-qt to your applications folder, and then run liberty-qt.
 
 ### Need Help?
 
-* Join our Rocket.Chat [Blocknet Rocket.Chat](https://rocket.blocknet.co:8443) and ask for help in the #wallet channel.
+* Join our Rocket.Chat [Liberty Rocket.Chat](https://rocket.lbrt.io:8443) and ask for help in the #wallet channel.
 
 Building
 ---------------------
-The following are developer notes on how to build BlocknetDX on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
+The following are developer notes on how to build Liberty on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [OSX Build Notes](build-osx.md)
 - [Unix Build Notes](build-unix.md)
@@ -38,7 +38,7 @@ The following are developer notes on how to build BlocknetDX on your native plat
 
 Development
 ---------------------
-The Blocknetdx repo's [root README](https://github.com/BlocknetDX/BlockDX/blob/master/README.md) contains relevant information on the development process and automated testing.
+The Liberty repo's [root README](https://github.com/project-liberty/BlockDX/blob/master/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Multiwallet Qt Development](multiwallet-qt.md)
@@ -52,8 +52,8 @@ The Blocknetdx repo's [root README](https://github.com/BlocknetDX/BlockDX/blob/m
 
 ### Resources
 
-* Visit our website [https://blocknet.co](https://blocknet.co)
-* Join our Rocket.Chat [https://rocket.blocknet.co:8443](https://rocket.blocknet.co:8443)
+* Visit our website [https://lbrt.io](https://lbrt.io)
+* Join our Rocket.Chat [https://rocket.lbrt.io:8443](https://rocket.lbrt.io:8443)
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

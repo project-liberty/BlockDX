@@ -17,7 +17,7 @@
   <string>APPL</string>
 
   <key>CFBundleGetInfoString</key>
-  <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@, Copyright © 2009-@COPYRIGHT_YEAR@ The Bitcoin Core developers, 2014-@COPYRIGHT_YEAR@ The Dash Core developers, 2015-@COPYRIGHT_YEAR@ The PIVX Core developers, 2015-@COPYRIGHT_YEAR@ The Blocknetdx Core developers</string>
+  <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@, Copyright © 2009-@COPYRIGHT_YEAR@ The Bitcoin Core developers, 2014-@COPYRIGHT_YEAR@ The Dash Core developers, 2015-@COPYRIGHT_YEAR@ The PIVX Core developers, 2015-@COPYRIGHT_YEAR@ The Liberty Core developers</string>
 
   <key>CFBundleShortVersionString</key>
   <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@</string>
@@ -29,10 +29,10 @@
   <string>????</string>
 
   <key>CFBundleExecutable</key>
-  <string>BlocknetDX-Qt</string>
+  <string>liberty-qt</string>
 
   <key>CFBundleIdentifier</key>
-  <string>io.blocknetdx.Blocknetdx-Qt</string>
+  <string>io.liberty.liberty-qt</string>
 
   <key>CFBundleURLTypes</key>
   <array>
@@ -40,10 +40,10 @@
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>CFBundleURLName</key>
-      <string>io.blocknetdx.BlocknetdxPayment</string>
+      <string>io.liberty.LibertyPayment</string>
       <key>CFBundleURLSchemes</key>
       <array>
-        <string>blocknetdx</string>
+        <string>liberty</string>
       </array>
     </dict>
   </array>
@@ -52,9 +52,9 @@
   <array>
     <dict>
       <key>UTTypeIdentifier</key>
-      <string>io.blocknetdx.paymentrequest</string>
+      <string>io.liberty.paymentrequest</string>
       <key>UTTypeDescription</key>
-      <string>Blocknetdx payment request</string>
+      <string>Liberty payment request</string>
       <key>UTTypeConformsTo</key>
       <array>
         <string>public.data</string>
@@ -62,10 +62,10 @@
       <key>UTTypeTagSpecification</key>
       <dict>
         <key>public.mime-type</key>
-        <string>application/x-blocknetdx-payment-request</string>
+        <string>application/x-liberty-payment-request</string>
         <key>public.filename-extension</key>
         <array>
-          <string>blocknetdxpaymentrequest</string>
+          <string>libertypaymentrequest</string>
         </array>
       </dict>
     </dict>
@@ -78,7 +78,7 @@
       <string>Editor</string>
       <key>LSItemContentTypes</key>
       <array>
-        <string>io.blocknetdx.paymentrequest</string>
+        <string>io.liberty.paymentrequest</string>
       </array>
       <key>LSHandlerRank</key>
       <string>Owner</string>

@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Blocknet developers
+// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -75,7 +75,7 @@ enum AvailableCoinsType {
     ALL_COINS = 1,
     ONLY_DENOMINATED = 2,
     ONLY_NOT_SERVICENODE_REQUIRED_AMOUNT_IFMN = 3,
-    // ONLY_NONDENOMINATED and not 5000 BLOCK at the same time
+    // ONLY_NONDENOMINATED and not 5000 LBRT at the same time
     ONLY_NONDENOMINATED_NOT_SERVICENODE_REQUIRED_AMOUNT_IFMN = 4,
     // find servicenode outputs including locked ones (use with caution)
     ONLY_SERVICENODE_REQUIRED_AMOUNT = 5

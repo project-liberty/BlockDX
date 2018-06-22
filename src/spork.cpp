@@ -1,6 +1,3 @@
-
-
-
 #include "spork.h"
 #include "base58.h"
 #include "key.h"
@@ -93,7 +90,8 @@ bool IsSporkActive(int nSporkID)
         if (nSporkID == SPORK_17_EXPL_FIX) r = SPORK_17_EXPL_FIX_DEFAULT;
         if (nSporkID == SPORK_18_PROPOSAL_FEE) r = SPORK_18_PROPOSAL_FEE_DEFAULT;
         if (nSporkID == SPORK_18_PROPOSAL_FEE_AMOUNT) r = SPORK_18_PROPOSAL_FEE_AMOUNT_DEFAULT;
-
+        if (nSporkID == SPORK_19_BLOCK_REWARD) r = SPORK_19_BLOCK_REWARD_DEFAULT;
+        if (nSporkID == SPORK_19_BLOCK_REWARD_AMOUNT) r = SPORK_19_BLOCK_REWARD_AMOUNT_DEFAULT;
         if (r == -1) LogPrintf("GetSpork::Unknown Spork %d\n", nSporkID);
     }
     if (r == -1) r = 4070908800; //return 2099-1-1 by default
@@ -123,6 +121,8 @@ int64_t GetSporkValue(int nSporkID)
         if (nSporkID == SPORK_17_EXPL_FIX) r = SPORK_17_EXPL_FIX_DEFAULT;
         if (nSporkID == SPORK_18_PROPOSAL_FEE) r = SPORK_18_PROPOSAL_FEE_DEFAULT;
         if (nSporkID == SPORK_18_PROPOSAL_FEE_AMOUNT) r = SPORK_18_PROPOSAL_FEE_AMOUNT_DEFAULT;
+        if (nSporkID == SPORK_19_BLOCK_REWARD) r = SPORK_19_BLOCK_REWARD_DEFAULT;
+        if (nSporkID == SPORK_19_BLOCK_REWARD_AMOUNT) r = SPORK_19_BLOCK_REWARD_AMOUNT_DEFAULT;
 
         if (r == -1) LogPrintf("GetSpork::Unknown Spork %d\n", nSporkID);
     }
@@ -272,6 +272,8 @@ int CSporkManager::GetSporkIDByName(std::string strName)
     if (strName == "SPORK_17_EXPL_FIX") return SPORK_17_EXPL_FIX;
     if (strName == "SPORK_18_PROPOSAL_FEE") return SPORK_18_PROPOSAL_FEE;
     if (strName == "SPORK_18_PROPOSAL_FEE_AMOUNT") return SPORK_18_PROPOSAL_FEE_AMOUNT;
+    if (strName == "SPORK_19_BLOCK_REWARD") return SPORK_19_BLOCK_REWARD;
+    if (strName == "SPORK_19_BLOCK_REWARD_AMOUNT") return SPORK_19_BLOCK_REWARD_AMOUNT;
 
     return -1;
 }
@@ -292,6 +294,8 @@ std::string CSporkManager::GetSporkNameByID(int id)
     if (id == SPORK_17_EXPL_FIX) return "SPORK_17_EXPL_FIX";
     if (id == SPORK_18_PROPOSAL_FEE) return "SPORK_18_PROPOSAL_FEE";
     if (id == SPORK_18_PROPOSAL_FEE_AMOUNT) return "SPORK_18_PROPOSAL_FEE_AMOUNT";
+    if (id == SPORK_19_BLOCK_REWARD) return "SPORK_19_BLOCK_REWARD";
+    if (id == SPORK_19_BLOCK_REWARD_AMOUNT) return "SPORK_19_BLOCK_REWARD_AMOUNT";
 
     return "Unknown";
 }

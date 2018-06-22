@@ -7,12 +7,12 @@ reset-files.bash
 *.tar.gz
 
 *.exe
-src/blocknetdx
-src/blocknetdxd
-src/blocknetdx-cli
-src/blocknetdx-tx
-src/test/test_blocknetdx
-src/qt/test/test_blocknetdx-qt
+src/liberty
+src/libertyd
+src/liberty-cli
+src/liberty-tx
+src/test/test_liberty
+src/qt/test/test_liberty-qt
 
 # autoreconf
 Makefile.in
@@ -35,8 +35,8 @@ config.log
 config.status
 configure
 libtool
-src/config/blocknetdx-config.h
-src/config/blocknetdx-config.h.in
+src/config/liberty-config.h
+src/config/liberty-config.h.in
 src/config/stamp-h1
 share/setup.nsi
 share/qt/Info.plist
@@ -47,6 +47,8 @@ src/univalue/gen
 src/qt/*.moc
 src/qt/moc_*.cpp
 src/qt/forms/ui_*.h
+src/qt/xbridgeui/*.moc
+src/qt/xbridgeui/moc_*.cpp
 
 src/qt/test/moc*.cpp
 
@@ -59,13 +61,13 @@ src/qt/test/moc*.cpp
 *.rej
 *.orig
 *.pyc
-*.o
-*.o-*
-*.patch
-.blocknetdx
+**/*.o
+**/*.o-*
+.liberty
 *.a
 *.pb.cc
 *.pb.h
+**/*.tmp
 
 *.log
 *.trs
@@ -80,13 +82,12 @@ src/qt/test/moc*.cpp
 
 # Compilation and Qt preprocessor part
 *.qm
-Makefile
-blocknetdx-qt
-BlocknetDX-Qt.app
+liberty-qt
+Liberty-Wallet.app
 
 # Unit-tests
 Makefile.test
-blocknetdx-qt_test
+liberty-qt_test
 src/test/buildenv.py
 
 # Resources cpp
@@ -102,7 +103,7 @@ build
 #lcov
 *.gcno
 /*.info
-test_blocknetdx.coverage/
+test_liberty.coverage/
 total.coverage/
 coverage_percent.txt
 
@@ -128,3 +129,5 @@ CMakeLists.txt
 cmake-build-debug/
 
 config.pri
+
+**/liberty-config.h

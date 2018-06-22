@@ -32,7 +32,7 @@ enum TxCancelReason
     crRpcRequest      = 10,
     crXbridgeRejected = 11,
     crInvalidAddress  = 12,
-    crBlocknetError   = 13,
+    crLibertyError   = 13,
     crBadADepositTx   = 14,
     crBadBDepositTx   = 15,
     crTimeout         = 16

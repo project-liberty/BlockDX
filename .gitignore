@@ -131,3 +131,4 @@ cmake-build-debug/
 config.pri
 
 **/liberty-config.h
+.vscode/launch.json

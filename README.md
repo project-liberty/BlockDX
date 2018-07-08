@@ -7,32 +7,43 @@ Liberty is an open source community driven project building a blockchain based P
 
 Contributors are welcome
 
-Liberty Specs:
-- 1 Minute Block Time
-- 5k for servicenodes
-- Diff. adjustment per block
-- Supports Fast Transactions w/ SwiftTX
-- Supports Decentralized voting/funding
+Liberty Specs
+=======================
+* 1 Minute Block Time
+* 5k for servicenodes
+* Diff. adjustment per block
+* Supports Fast Transactions w/ SwiftTX
+* Supports Decentralized voting/funding
 
+Premine Burn
+=======================
+350,000 LBRT were burned from the premine to alleviate concerns some investors had about the premine size.
 
-## Liberty
--- Decentralized Atomic Swap algo summary
+http://explorer.lbrt.io/address/LZBurnAddressForLbrtPreminextStefG
 
-```Step1.
-Initiator creates secret X, and hashes it to create H(X). Initiator also creates public private key pair (pubkey i1,i2 / privkey i2,i2). Responder creates public private key pair (pubkey r1,r2 / privkey r1,r2).
+The source code used to create the address has also been checked-in to contrib/devtools for 100% transparency.
 
-Step 2.
-Initiator shares H(X) and pubkey i2 with responder. Responder shares pubkey r1 with intiator.
+Block Reward Schedule
+=======================
 
-Step 3.
-Initiator creates TxAb. TxAb can be redeemed after time T2 with privkey i1. At any time TxAb can redeemed with signature from privkey r1 and reveal of secret X. Initiator broadcasts TxAb onto the network.
+Start Height | End Height | Block Reward
+------------- | ------------- | -------------
+0 | 0| 1.25M LBRT
+1 | 69,999 | 1 LBRT
+70,000 | 80,000 | 2 LBRT
+80,001 | 90,000 | 3 LBRT
+90,001 | 100,000 | 4 LBRT
+100,001 | 110,000 | 5 LBRT
+110,001 | 120,000 | 6 LBRT
+120,001 | 130,000 | 7 LBRT
+130,001 | 140,000 | 6 LBRT
+140,001 | 150,000 | 5 LBRT
+150,001 | 160,000 | 4 LBRT
+160,001 | 170,000 | 3 LBRT
+170,001 | 225,000 | 2 LBRT
+225,001 | *Max Supply | 1 LBRT
 
-Step 4.
-Responder confirms TxAb. Responder creates TxBb. TxBb can be redeemed after T1 time with privkey r2. At any time TxBb can be redeemed with signature fom privkey i2 and reveal of secret X. Responder broadcasts TxBb onto the network.
-
-Step 5.
-Initiator creates TxBp which spends TxBb using privkey i2 and secret X. With the revealed secret, responder can create TxAp which spends TxAb with privkey r1 and secret X.
-```
+*Max Supply is 22.5M LBRT.
 
 ## LICENSE
 

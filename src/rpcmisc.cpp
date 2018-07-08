@@ -10,10 +10,10 @@
 #include "clientversion.h"
 #include "init.h"
 #include "main.h"
-#include "servicenode-sync.h"
 #include "net.h"
 #include "netbase.h"
 #include "rpcserver.h"
+#include "servicenode-sync.h"
 #include "spork.h"
 #include "timedata.h"
 #include "util.h"
@@ -97,7 +97,9 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("proxy", (proxy.IsValid() ? proxy.ToStringIPPort() : string())));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("testnet", Params().TestnetToBeDeprecatedFieldRPC()));
-    obj.push_back(Pair("moneysupply",ValueFromAmount(chainActive.Tip()->nMoneySupply)));
+    //kludge: subtract the premine amount from supply.
+    //http://explorer.lbrt.io/address/LZBurnAddressForLbrtPreminextStefG
+    obj.push_back(Pair("moneysupply", ValueFromAmount(chainActive.Tip()->nMoneySupply - 350001 * COIN)));
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
         obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));

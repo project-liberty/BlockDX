@@ -15,6 +15,13 @@ Liberty Specs
 * Supports Fast Transactions w/ SwiftTX
 * Supports Decentralized voting/funding
 
+Ports
+=======================
+Type | Number
+--------- | ---------
+P2P | 41412
+RPC | 41414
+
 Premine Burn
 =======================
 350,000 LBRT were burned from the premine to alleviate concerns some investors had about the premine size.

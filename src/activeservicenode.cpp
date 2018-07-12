@@ -1,10 +1,11 @@
 
 #include "activeservicenode.h"
 #include "addrman.h"
+#include "netbase.h"
+#include "protocol.h"
 #include "servicenode.h"
 #include "servicenodeconfig.h"
 #include "servicenodeman.h"
-#include "protocol.h"
 #include "spork.h"
 #include "xbridge/xbridgeexchange.h"
 
@@ -84,13 +85,15 @@ void CActiveServicenode::ManageStatus()
 
         LogPrintf("CActiveServicenode::ManageStatus() - Checking inbound connection to '%s'\n", service.ToString());
 
-        CNode* pnode = ConnectNode((CAddress)service, NULL, false);
-        if (!pnode) {
+        SOCKET hSocket;
+        bool fConnected = ConnectSocket(service, hSocket, nConnectTimeout) && IsSelectableSocket(hSocket);
+        CloseSocket(hSocket);
+
+        if (!fConnected) {
             notCapableReason = "Could not connect to " + service.ToString();
             LogPrintf("CActiveServicenode::ManageStatus() - not capable: %s\n", notCapableReason);
             return;
         }
-        pnode->Release();
 
         // Choose coins to use
         CPubKey pubKeyCollateralAddress;
@@ -196,8 +199,7 @@ bool CActiveServicenode::SendServicenodePing(std::string& errorMessage, bool for
         //mnodeman.mapSeenServicenodeBroadcast.lastPing is probably outdated, so we'll update it
         CServicenodeBroadcast mnb(*pmn);
         uint256 hash = mnb.GetHash();
-        if (mnodeman.mapSeenServicenodeBroadcast.count(hash))
-        {
+        if (mnodeman.mapSeenServicenodeBroadcast.count(hash)) {
             mnodeman.mapSeenServicenodeBroadcast[hash].lastPing = mnp;
         }
 
@@ -303,12 +305,12 @@ bool CActiveServicenode::Register(CTxIn vin, CService service, CKey keyCollatera
 
     LogPrintf("CActiveServicenode::Register() - Adding to Servicenode list\n    service: %s\n    vin: %s\n", service.ToString(), vin.ToString());
 
-    xbridge::Exchange & e = xbridge::Exchange::instance();
+    xbridge::Exchange& e = xbridge::Exchange::instance();
 
     mnb = CServicenodeBroadcast(service, vin,
-                                pubKeyCollateralAddress, pubKeyServicenode,
-                                PROTOCOL_VERSION,
-                                e.isEnabled() ? e.connectedWallets() : std::vector<std::string>());
+        pubKeyCollateralAddress, pubKeyServicenode,
+        PROTOCOL_VERSION,
+        e.isEnabled() ? e.connectedWallets() : std::vector<std::string>());
     mnb.lastPing = mnp;
     if (!mnb.Sign(keyCollateralAddress)) {
         errorMessage = strprintf("Failed to sign broadcast, vin: %s", vin.ToString());
@@ -473,7 +475,7 @@ vector<COutput> CActiveServicenode::SelectCoinsServicenode()
             mnTxHash.SetHex(mne.getTxHash());
 
             int nIndex;
-            if(!mne.castOutputIndex(nIndex))
+            if (!mne.castOutputIndex(nIndex))
                 continue;
 
             COutPoint outpoint = COutPoint(mnTxHash, nIndex);
@@ -513,20 +515,17 @@ bool CActiveServicenode::EnableHotColdServiceNode(CTxIn& newVin, CService& newSe
     service = newService;
 
     // update xbridge info for my servicenode
-    CServicenode * mn = mnodeman.Find(vin);
-    if (mn)
-    {
-        xbridge::Exchange & e = xbridge::Exchange::instance();
-        if (e.isEnabled())
-        {
+    CServicenode* mn = mnodeman.Find(vin);
+    if (mn) {
+        xbridge::Exchange& e = xbridge::Exchange::instance();
+        if (e.isEnabled()) {
             mn->connectedWallets.clear();
-            for(const std::string & walletName : e.connectedWallets())
+            for (const std::string& walletName : e.connectedWallets())
                 mn->connectedWallets.push_back(CServicenodeXWallet(walletName));
 
             CServicenodeBroadcast mnb(*mn);
             uint256 hash = mnb.GetHash();
-            if (mnodeman.mapSeenServicenodeBroadcast.count(hash))
-            {
+            if (mnodeman.mapSeenServicenodeBroadcast.count(hash)) {
                 mnodeman.mapSeenServicenodeBroadcast[hash].connectedWallets = mn->connectedWallets;
             }
         }

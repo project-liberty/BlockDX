@@ -1,6 +1,5 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2015-2018 The Liberty developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -52,8 +51,8 @@ bool CServicenodeSync::IsBlockchainSynced()
     CBlockIndex* pindex = chainActive.Tip();
     if (pindex == NULL) return false;
 
-    // Do not stall testnet
-    if (Params().NetworkID() == CBaseChainParams::MAIN && pindex->nTime + 60 * 60 < GetTime())
+
+    if (pindex->nTime + 60 * 60 < GetTime())
         return false;
 
     fBlockchainSynced = true;
@@ -181,7 +180,7 @@ std::string CServicenodeSync::GetSyncStatus()
     return "";
 }
 
-void CServicenodeSync::ProcessMessage(CNode* /*pfrom*/, std::string& strCommand, CDataStream& vRecv)
+void CServicenodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if (strCommand == "ssc") { //Sync status count
         int nItemID;
@@ -367,19 +366,14 @@ void CServicenodeSync::Process()
 
         if (pnode->nVersion >= ActiveProtocol()) {
             if (RequestedServicenodeAssets == SERVICENODE_SYNC_BUDGET) {
-                //we'll start rejecting votes if we accidentally get set as synced too soon
-                if (lastBudgetItem > 0 && lastBudgetItem < GetTime() - SERVICENODE_SYNC_TIMEOUT * 2 && RequestedServicenodeAttempt >= SERVICENODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
+                // We'll start rejecting votes if we accidentally get set as synced too soon
+                if (lastBudgetItem > 0 && lastBudgetItem < GetTime() - SERVICENODE_SYNC_TIMEOUT * 2 && RequestedServicenodeAttempt >= SERVICENODE_SYNC_THRESHOLD) {
+                    // Hasn't received a new item in the last five seconds, so we'll move to the
                     GetNextAsset();
 
-                    //try to activate our servicenode if possible
+                    // Try to activate our servicenode if possible
                     activeServicenode.ManageStatus();
-                    // } else { //we've failed to sync, this state will reject the next budget block
-                    //     LogPrintf("CServicenodeSync::Process - ERROR - Sync has failed, will retry later\n");
-                    //     RequestedServicenodeAssets = SERVICENODE_SYNC_FAILED;
-                    //     RequestedServicenodeAttempt = 0;
-                    //     lastFailure = GetTime();
-                    //     nCountFailures++;
-                    // }
+
                     return;
                 }
 

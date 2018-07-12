@@ -61,18 +61,18 @@ QString BitcoinUnits::name(int unit)
         case mLBRT:
             return QString("mLBRT");
         case uLBRT:
-            return QString::fromUtf8("μBLOCK");
+            return QString::fromUtf8("μLBRT");
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
         case LBRT:
-            return QString("tBLOCK");
+            return QString("tLBRT");
         case mLBRT:
-            return QString("mtBLOCK");
+            return QString("mtLBRT");
         case uLBRT:
-            return QString::fromUtf8("μtBLOCK");
+            return QString::fromUtf8("μtLBRT");
         default:
             return QString("???");
         }
@@ -95,11 +95,11 @@ QString BitcoinUnits::description(int unit)
     } else {
         switch (unit) {
         case LBRT:
-            return QString("TestBLOCKs");
+            return QString("TestLBRTs");
         case mLBRT:
-            return QString("Milli-TestBLOCK (1 / 1" THIN_SP_UTF8 "000)");
+            return QString("Milli-TestLBRT (1 / 1" THIN_SP_UTF8 "000)");
         case uLBRT:
-            return QString("Micro-TestBLOCK (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+            return QString("Micro-TestLBRT (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }

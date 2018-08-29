@@ -5,6 +5,7 @@
 #define XBRIDGEWALLETCONNECTOR_H
 
 #include "xbridgewallet.h"
+#include "uint256.h"
 
 #include <vector>
 #include <string>
@@ -78,10 +79,15 @@ public:
 
     virtual bool getInfo(rpc::WalletInfo & info) const = 0;
 
-    virtual bool getUnspent(std::vector<wallet::UtxoEntry> & inputs, const bool withoutDust = true) const = 0;
+    virtual bool getUnspent(std::vector<wallet::UtxoEntry> & inputs, const bool withLocked = false) const = 0;
 
+    // if lock returns false if already locked
+    // if unlock always return true
     virtual bool lockCoins(const std::vector<wallet::UtxoEntry> & inputs,
-                             const bool lock = true) const = 0;
+                           const bool lock = true);
+
+    // remove locked coins (lockedCoins) from array
+    void removeLocked(std::vector<wallet::UtxoEntry> & inputs) const;
 
     virtual bool getTxOut(wallet::UtxoEntry & entry) = 0;
 

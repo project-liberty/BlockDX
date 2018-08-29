@@ -132,3 +132,5 @@ config.pri
 
 **/liberty-config.h
 .vscode/launch.json
+src/Makefile
+Makefile

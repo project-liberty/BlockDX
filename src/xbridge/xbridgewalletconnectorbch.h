@@ -1,10 +1,11 @@
 //******************************************************************************
 //******************************************************************************
 
-#ifndef XBRIDGEWALLETCONNECTORBCC_H
-#define XBRIDGEWALLETCONNECTORBCC_H
+#ifndef XBRIDGEWALLETCONNECTORBCH_H
+#define XBRIDGEWALLETCONNECTORBCH_H
 
 #include "xbridgewalletconnectorbtc.h"
+#include "xbridgecryptoproviderbtc.h"
 
 //*****************************************************************************
 //*****************************************************************************
@@ -13,10 +14,10 @@ namespace xbridge
 
 //******************************************************************************
 //******************************************************************************
-class BccWalletConnector : public BtcWalletConnector
+class BchWalletConnector : public BtcWalletConnector<BtcCryptoProvider>
 {
 public:
-    BccWalletConnector();
+    BchWalletConnector();
 
     bool init();
 
@@ -30,7 +31,7 @@ public:
     std::string scriptIdToString(const std::vector<unsigned char> & id) const;
 
 public:
-    bool createRefundTransaction(const std::vector<std::pair<std::string, int> > & inputs,
+    bool createRefundTransaction(const std::vector<XTxIn> & inputs,
                                  const std::vector<std::pair<std::string, double> > & outputs,
                                  const std::vector<unsigned char> & mpubKey,
                                  const std::vector<unsigned char> & mprivKey,
@@ -39,7 +40,7 @@ public:
                                  std::string & txId,
                                  std::string & rawTx);
 
-    bool createPaymentTransaction(const std::vector<std::pair<std::string, int> > & inputs,
+    bool createPaymentTransaction(const std::vector<XTxIn> & inputs,
                                   const std::vector<std::pair<std::string, double> > & outputs,
                                   const std::vector<unsigned char> & mpubKey,
                                   const std::vector<unsigned char> & mprivKey,
@@ -51,4 +52,4 @@ public:
 
 } // namespace xbridge
 
-#endif // XBRIDGEWALLETCONNECTORBCC_H
+#endif // XBRIDGEWALLETCONNECTORBCH_H

@@ -14,7 +14,6 @@
 #include "rpcserver.h"
 #include "net.h"
 #include "util.h"
-#include "xkey.h"
 #include "ui_interface.h"
 #include "init.h"
 #include "wallet.h"
@@ -22,8 +21,8 @@
 #include "activeservicenode.h"
 #include "xbridgewalletconnector.h"
 #include "xbridgewalletconnectorbtc.h"
-#include "xbridgewalletconnectorbcc.h"
-#include "xbridgewalletconnectorsys.h"
+#include "xbridgecryptoproviderbtc.h"
+#include "xbridgewalletconnectorbch.h"
 #include "xbridgewalletconnectordgb.h"
 
 #include <assert.h>
@@ -303,8 +302,10 @@ bool App::Impl::start()
                 wp.txVersion                   = s.get<uint32_t>   (*i + ".TxVersion", 1);
                 wp.minTxFee                    = s.get<uint64_t>   (*i + ".MinTxFee", 0);
                 wp.method                      = s.get<std::string>(*i + ".CreateTxMethod");
-                wp.blockTime                   = s.get<int>(*i + ".BlockTime", 0);
-                wp.requiredConfirmations       = s.get<int>(*i + ".Confirmations", 0);
+                wp.blockTime                   = s.get<int>        (*i + ".BlockTime", 0);
+                wp.requiredConfirmations       = s.get<int>        (*i + ".Confirmations", 0);
+                wp.txWithTimeField             = s.get<bool>       (*i + ".TxWithTimeField", false);
+                wp.isLockCoinsSupported        = s.get<bool>       (*i + ".LockCoinsSupported", false);
 
                 if (wp.m_ip.empty() || wp.m_port.empty() ||
                     wp.m_user.empty() || wp.m_passwd.empty() ||
@@ -323,19 +324,14 @@ bool App::Impl::start()
                     LOG() << "wp.method ETHER not implemented" << __FUNCTION__;
                     // session.reset(new XBridgeSessionEthereum(wp));
                 }
-                else if (wp.method == "BTC")
+                else if (wp.method == "BTC" || wp.method == "SYS")
                 {
-                    conn.reset(new BtcWalletConnector);
+                    conn.reset(new BtcWalletConnector<BtcCryptoProvider>);
                     *conn = wp;
                 }
-                else if (wp.method == "BCC")
+                else if (wp.method == "BCH")
                 {
-                    conn.reset(new BccWalletConnector);
-                    *conn = wp;
-                }
-                else if (wp.method == "SYS")
-                {
-                    conn.reset(new SysWalletConnector);
+                    conn.reset(new BchWalletConnector);
                     *conn = wp;
                 }
                 else if (wp.method == "DGB")
@@ -385,13 +381,6 @@ bool App::init(int argc, char *argv[])
         LOG() << "Finished loading config" << path;
     }
 
-    // init secp256
-    if(!ECC_Start()) {
-
-        ERR() << "can't start secp256, xbridgeApp not started " << __FUNCTION__;
-        throw  std::runtime_error("can't start secp256, xbridgeApp not started ");
-
-    }
     // init exchange
     Exchange & e = Exchange::instance();
     e.init();
@@ -440,9 +429,6 @@ bool App::Impl::stop()
     }
 
     m_threads.join_all();
-
-    // secp stop
-    ECC_Stop();
 
     return true;
 }
@@ -572,6 +558,7 @@ void App::onMessageReceived(const std::vector<unsigned char> & id,
     {
         ptr->processPacket(packet);
     }
+
     else
     {
         {
@@ -1211,11 +1198,6 @@ Error App::acceptXBridgeTransaction(const uint256     & id,
         return xbridge::Error::INSIFFICIENT_FUNDS;
     }
 
-    LOG() << "fee1: " << (static_cast<double>(fee1) / TransactionDescr::COIN);
-    LOG() << "fee2: " << (static_cast<double>(fee2) / TransactionDescr::COIN);
-    LOG() << "amount of used utxo items: " << (static_cast<double>(utxoAmount) / TransactionDescr::COIN)
-          << " required amount + fees: " << (static_cast<double>(ptr->fromAmount + fee1 + fee2) / TransactionDescr::COIN);
-
     // sign used coins
     for (wallet::UtxoEntry & entry : outputsForUse)
     {
@@ -1439,7 +1421,8 @@ Error App::checkAcceptParams(const uint256 &id, TransactionDescrPtr &ptr, const 
         return xbridge::TRANSACTION_NOT_FOUND;
     }
 
-    return checkAmount(ptr->toCurrency, ptr->toAmount, ""); // TODO enforce by address after improving addressbook
+    // TODO enforce by address after improving addressbook
+    return checkAmount(ptr->toCurrency, ptr->toAmount, "");
 }
 
 //******************************************************************************

@@ -6,15 +6,16 @@
 #include "json/json_spirit_utils.h"
 
 #include "xbridgewalletconnectorbtc.h"
+#include "xbridgecryptoproviderbtc.h"
 #include "base58.h"
 
 #include "util/logger.h"
 #include "util/txlog.h"
 
-#include "xkey.h"
-#include "xbitcoinsecret.h"
 #include "xbitcoinaddress.h"
 #include "xbitcointransaction.h"
+
+#include "secp256k1.h"
 
 #include <boost/asio.hpp>
 #include <boost/iostreams/concepts.hpp>
@@ -291,6 +292,58 @@ bool getaddressesbyaccount(const std::string & rpcuser, const std::string & rpcp
 
 //*****************************************************************************
 //*****************************************************************************
+bool validateaddress(const std::string & rpcuser, const std::string & rpcpasswd,
+                     const std::string & rpcip, const std::string & rpcport,
+                     const std::string & address,
+                     bool & isValid, bool & isMine, bool & isWatchOnly, bool & isScript)
+{
+    try
+    {
+        // LOG() << "rpc call <validateaddress>";
+
+        Array params;
+        params.push_back(address);
+        Object reply = CallRPC(rpcuser, rpcpasswd, rpcip, rpcport,
+                               "validateaddress", params);
+
+        // Parse reply
+        const Value & result = find_value(reply, "result");
+        const Value & error  = find_value(reply, "error");
+
+        if (error.type() != null_type)
+        {
+            // Error
+            LOG() << "error: " << write_string(error, false);
+            // int code = find_value(error.get_obj(), "code").get_int();
+            return false;
+        }
+        else if (result.type() != obj_type)
+        {
+            // Result
+            LOG() << "result not an array " <<
+                     (result.type() == null_type ? "" :
+                      result.type() == str_type  ? result.get_str() :
+                                                   write_string(result, true));
+            return false;
+        }
+
+        Object o = result.get_obj();
+        isValid     = find_value(o, "isvalid").get_bool();
+        isMine      = find_value(o, "ismine").get_bool();
+        isWatchOnly = find_value(o, "iswatchonly").get_bool();
+        isScript    = find_value(o, "isscript").get_bool();
+    }
+    catch (std::exception & e)
+    {
+        LOG() << "validateaddress exception " << e.what();
+        return false;
+    }
+
+    return true;
+}
+
+//*****************************************************************************
+//*****************************************************************************
 bool listUnspent(const std::string & rpcuser,
                  const std::string & rpcpasswd,
                  const std::string & rpcip,
@@ -300,7 +353,8 @@ bool listUnspent(const std::string & rpcuser,
     const static std::string txid("txid");
     const static std::string vout("vout");
     const static std::string amount("amount");
-    const static std::string address("address");
+    const static std::string scriptPubKey("scriptPubKey");
+
 
     try
     {
@@ -354,9 +408,9 @@ bool listUnspent(const std::string & rpcuser,
                     {
                         u.amount = v.value_.get_real();
                     }
-                    else if (v.name_ == address)
+                    else if (v.name_ == scriptPubKey)
                     {
-                        u.address = v.value_.get_str();
+                        u.scriptPubKey = v.value_.get_str();
                     }
                 }
 
@@ -437,7 +491,7 @@ bool lockUnspent(const std::string & rpcuser,
     }
     catch (std::exception & e)
     {
-        LOG() << "listunspent exception " << e.what();
+        LOG() << "lockunspent exception " << e.what();
         return false;
     }
 
@@ -718,7 +772,7 @@ bool createRawTransaction(const std::string & rpcuser,
                           const std::string & rpcpasswd,
                           const std::string & rpcip,
                           const std::string & rpcport,
-                          const std::vector<std::pair<string, int> > & inputs,
+                          const std::vector<XTxIn> & inputs,
                           const std::vector<std::pair<std::string, double> > & outputs,
                           const uint32_t lockTime,
                           std::string & tx)
@@ -729,11 +783,11 @@ bool createRawTransaction(const std::string & rpcuser,
 
         // inputs
         Array i;
-        for (const std::pair<string, int> & input : inputs)
+        for (const XTxIn & input : inputs)
         {
             Object tmp;
-            tmp.push_back(Pair("txid", input.first));
-            tmp.push_back(Pair("vout", input.second));
+            tmp.push_back(Pair("txid", input.txid));
+            tmp.push_back(Pair("vout", static_cast<int>(input.n)));
 
             i.push_back(tmp);
         }
@@ -1161,16 +1215,97 @@ bool verifyMessage(const std::string & rpcuser, const std::string & rpcpasswd,
 
 } // namespace rpc
 
-//*****************************************************************************
-//*****************************************************************************
-BtcWalletConnector::BtcWalletConnector()
+namespace
 {
 
+/**
+ * @brief SignatureHash  compute hash of transaction signature
+ * @param scriptCode
+ * @param txTo
+ * @param nIn
+ * @param nHashType
+ * @return hash of transaction signature
+ */
+uint256 SignatureHash(const CScript& scriptCode, const CTransactionPtr & txTo,
+                      unsigned int nIn, int nHashType
+                      /*, const CAmount& amount,
+                       * SigVersion sigversion,
+                       * const PrecomputedTransactionData* cache*/)
+{
+//    if (sigversion == SIGVERSION_WITNESS_V0) {
+//        uint256 hashPrevouts;
+//        uint256 hashSequence;
+//        uint256 hashOutputs;
+
+//        if (!(nHashType & SIGHASH_ANYONECANPAY)) {
+//            hashPrevouts = cache ? cache->hashPrevouts : GetPrevoutHash(txTo);
+//        }
+
+//        if (!(nHashType & SIGHASH_ANYONECANPAY) && (nHashType & 0x1f) != SIGHASH_SINGLE && (nHashType & 0x1f) != SIGHASH_NONE) {
+//            hashSequence = cache ? cache->hashSequence : GetSequenceHash(txTo);
+//        }
+
+
+//        if ((nHashType & 0x1f) != SIGHASH_SINGLE && (nHashType & 0x1f) != SIGHASH_NONE) {
+//            hashOutputs = cache ? cache->hashOutputs : GetOutputsHash(txTo);
+//        } else if ((nHashType & 0x1f) == SIGHASH_SINGLE && nIn < txTo.vout.size()) {
+//            CHashWriter ss(SER_GETHASH, 0);
+//            ss << txTo.vout[nIn];
+//            hashOutputs = ss.GetHash();
+//        }
+
+//        CHashWriter ss(SER_GETHASH, 0);
+//        // Version
+//        ss << txTo.nVersion;
+//        // Input prevouts/nSequence (none/all, depending on flags)
+//        ss << hashPrevouts;
+//        ss << hashSequence;
+//        // The input being signed (replacing the scriptSig with scriptCode + amount)
+//        // The prevout may already be contained in hashPrevout, and the nSequence
+//        // may already be contain in hashSequence.
+//        ss << txTo.vin[nIn].prevout;
+//        ss << static_cast<const CScriptBase&>(scriptCode);
+//        ss << amount;
+//        ss << txTo.vin[nIn].nSequence;
+//        // Outputs (none/one/all, depending on flags)
+//        ss << hashOutputs;
+//        // Locktime
+//        ss << txTo.nLockTime;
+//        // Sighash type
+//        ss << nHashType;
+
+//        return ss.GetHash();
+//    }
+
+    static const uint256 one(uint256S("0000000000000000000000000000000000000000000000000000000000000001"));
+    if (nIn >= txTo->vin.size()) {
+        //  nIn out of range
+        return one;
+    }
+
+    // Check for invalid use of SIGHASH_SINGLE
+    if ((nHashType & 0x1f) == SIGHASH_SINGLE) {
+        if (nIn >= txTo->vout.size()) {
+            //  nOut out of range
+            return one;
+        }
+    }
+
+    // Wrapper to serialize only the necessary parts of the transaction being signed
+    CTransactionSignatureSerializer txTmp(*txTo, scriptCode, nIn, nHashType);
+
+    // Serialize and hash
+    CHashWriter ss(SER_GETHASH, 0);
+    ss << txTmp << nHashType;
+    return ss.GetHash();
 }
+
+} // namespace
 
 //*****************************************************************************
 //*****************************************************************************
-bool BtcWalletConnector::init()
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::init()
 {
     // convert prefixes
     addrPrefix   = static_cast<char>(std::atoi(addrPrefix.data()));
@@ -1208,7 +1343,8 @@ std::string BtcWalletConnector<CryptoProvider>::fromXAddr(const std::vector<unsi
 
 //*****************************************************************************
 //*****************************************************************************
-std::vector<unsigned char> BtcWalletConnector::toXAddr(const std::string & addr) const
+template <class CryptoProvider>
+std::vector<unsigned char> BtcWalletConnector<CryptoProvider>::toXAddr(const std::string & addr) const
 {
     std::vector<unsigned char> vaddr;
     if (DecodeBase58Check(addr.c_str(), vaddr))
@@ -1220,7 +1356,8 @@ std::vector<unsigned char> BtcWalletConnector::toXAddr(const std::string & addr)
 
 //*****************************************************************************
 //*****************************************************************************
-bool BtcWalletConnector::requestAddressBook(std::vector<wallet::AddressBookEntry> & entries)
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::requestAddressBook(std::vector<wallet::AddressBookEntry> & entries)
 {
     std::vector<std::string> accounts;
     if (!rpc::listaccounts(m_user, m_passwd, m_ip, m_port, accounts))
@@ -1231,17 +1368,49 @@ bool BtcWalletConnector::requestAddressBook(std::vector<wallet::AddressBookEntry
     for (std::string & account : accounts)
     {
         std::vector<std::string> addrs;
-        if (rpc::getaddressesbyaccount(m_user, m_passwd, m_ip, m_port, account, addrs))
+        if (!rpc::getaddressesbyaccount(m_user, m_passwd, m_ip, m_port, account, addrs))
         {
-            entries.emplace_back(account.empty() ? "_none" : account, addrs);
-            // LOG() << acc << " - " << boost::algorithm::join(addrs, ",");
+            continue;
         }
+
+        std::vector<std::string> copy;
+        for (const std::string & a : addrs)
+        {
+            bool isValid     = false;
+            bool isMine      = false;
+            bool isWatchOnly = false;
+            bool isScript    = false;
+            if (!rpc::validateaddress(m_user, m_passwd, m_ip, m_port, a,
+                                      isValid, isMine, isWatchOnly, isScript))
+            {
+                continue;
+            }
+
+            if (!isValid || !isMine || isWatchOnly || isScript)
+            {
+                continue;
+            }
+
+            copy.emplace_back(a);
+        }
+
+        if (copy.empty())
+        {
+            continue;
+        }
+
+        entries.emplace_back(account.empty() ? "_none" : account, copy);
+        // LOG() << acc << " - " << boost::algorithm::join(addrs, ",");
+
     }
 
     return true;
 }
 
-bool BtcWalletConnector::getInfo(rpc::WalletInfo & info) const
+//*****************************************************************************
+//*****************************************************************************
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::getInfo(rpc::WalletInfo & info) const
 {
     if (!rpc::getblockchaininfo(m_user, m_passwd, m_ip, m_port, info) ||
         !rpc::getnetworkinfo(m_user, m_passwd, m_ip, m_port, info))
@@ -1260,7 +1429,9 @@ bool BtcWalletConnector::getInfo(rpc::WalletInfo & info) const
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::getUnspent(std::vector<wallet::UtxoEntry> & inputs, const bool withoutDust) const
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::getUnspent(std::vector<wallet::UtxoEntry> & inputs,
+                                                    const bool withLocked) const
 {
     if (!rpc::listUnspent(m_user, m_passwd, m_ip, m_port, inputs))
     {
@@ -1268,10 +1439,15 @@ bool BtcWalletConnector::getUnspent(std::vector<wallet::UtxoEntry> & inputs, con
         return false;
     }
 
-    if (withoutDust)
+    for (size_t i = 0; i < inputs.size(); )
     {
-        std::remove_if(inputs.begin(), inputs.end(),
-                [this](const wallet::UtxoEntry & entry)
+        wallet::UtxoEntry & entry = inputs[i];
+
+        std::vector<unsigned char> script = ParseHex(entry.scriptPubKey);
+        // check p2pkh (like 76a91476bba472620ff0ecbfbf93d0d3909c6ca84ac81588ac)
+        if (script.size() == 25 &&
+            script[0] == 0x76 && script[1] == 0xa9 && script[2] == 0x14 &&
+            script[23] == 0x88 && script[24] == 0xac)
         {
             script.erase(script.begin(), script.begin()+3);
             script.erase(script.end()-2, script.end());
@@ -1297,13 +1473,21 @@ bool BtcWalletConnector::getUnspent(std::vector<wallet::UtxoEntry> & inputs, con
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::lockCoins(const std::vector<wallet::UtxoEntry> & inputs,
-                                            const bool lock) const
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::lockCoins(const std::vector<wallet::UtxoEntry> & inputs,
+                                                   const bool lock)
 {
-    if (!rpc::lockUnspent(m_user, m_passwd, m_ip, m_port, inputs, lock))
+    if (!WalletConnector::lockCoins(inputs, lock))
     {
-        LOG() << "rpc::lockUnspent failed " << __FUNCTION__;
         return false;
+    }
+
+    if (isLockCoinsSupported)
+    {
+        if (!rpc::lockUnspent(m_user, m_passwd, m_ip, m_port, inputs, lock))
+        {
+            LOG() << "rpc::lockUnspent failed " << __FUNCTION__;
+        }
     }
 
     return true;
@@ -1311,7 +1495,8 @@ bool BtcWalletConnector::lockCoins(const std::vector<wallet::UtxoEntry> & inputs
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::getNewAddress(std::string & addr)
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::getNewAddress(std::string & addr)
 {
     if (!rpc::getNewAddress(m_user, m_passwd, m_ip, m_port, addr))
     {
@@ -1324,12 +1509,18 @@ bool BtcWalletConnector::getNewAddress(std::string & addr)
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::getTxOut(wallet::UtxoEntry & entry)
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::getTxOut(wallet::UtxoEntry & entry)
 {
     if (!rpc::gettxout(m_user, m_passwd, m_ip, m_port, entry))
     {
-        LOG() << "rpc::gettxout failed " << __FUNCTION__;
-        return false;
+        LOG() << "gettxout failed, trying call gettransaction " << __FUNCTION__;
+
+        if(!rpc::gettransaction(m_user, m_passwd, m_ip, m_port, entry))
+        {
+            WARN() << "both calls of gettxout and gettransaction failed " << __FUNCTION__;
+            return false;
+        }
     }
 
     return true;
@@ -1337,7 +1528,8 @@ bool BtcWalletConnector::getTxOut(wallet::UtxoEntry & entry)
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::sendRawTransaction(const std::string & rawtx,
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::sendRawTransaction(const std::string & rawtx,
                                             std::string & txid,
                                             int32_t & errorCode,
                                             std::string & message)
@@ -1359,7 +1551,8 @@ bool BtcWalletConnector::sendRawTransaction(const std::string & rawtx,
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::signMessage(const std::string & address,
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::signMessage(const std::string & address,
                                      const std::string & message,
                                      std::string & signature)
 {
@@ -1375,7 +1568,8 @@ bool BtcWalletConnector::signMessage(const std::string & address,
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::verifyMessage(const std::string & address,
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::verifyMessage(const std::string & address,
                                        const std::string & message,
                                        const std::string & signature)
 {
@@ -1424,24 +1618,27 @@ bool BtcWalletConnector<CryptoProvider>::isDustAmount(const double & amount) con
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::newKeyPair(std::vector<unsigned char> & pubkey,
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::newKeyPair(std::vector<unsigned char> & pubkey,
                                     std::vector<unsigned char> & privkey)
 {
-    xbridge::CKey km;
-    km.MakeNewKey(true);
+    m_cp.makeNewKey(privkey);
+    return m_cp.getPubKey(privkey, pubkey);
+}
 
 //******************************************************************************
 //******************************************************************************
 template <class CryptoProvider>
 std::vector<unsigned char> BtcWalletConnector<CryptoProvider>::getKeyId(const std::vector<unsigned char> & pubkey)
 {
-    CKeyID id = xbridge::CPubKey(pubkey).GetID();
+    uint160 id = Hash160(&pubkey[0], &pubkey[0] + pubkey.size());
     return std::vector<unsigned char>(id.begin(), id.end());
 }
 
 //******************************************************************************
 //******************************************************************************
-std::vector<unsigned char> BtcWalletConnector::getScriptId(const std::vector<unsigned char> & script)
+template <class CryptoProvider>
+std::vector<unsigned char> BtcWalletConnector<CryptoProvider>::getScriptId(const std::vector<unsigned char> & script)
 {
     CScriptID id = CScript(script.begin(), script.end());
     return std::vector<unsigned char>(id.begin(), id.end());
@@ -1449,7 +1646,8 @@ std::vector<unsigned char> BtcWalletConnector::getScriptId(const std::vector<uns
 
 //******************************************************************************
 //******************************************************************************
-std::string BtcWalletConnector::scriptIdToString(const std::vector<unsigned char> & id) const
+template <class CryptoProvider>
+std::string BtcWalletConnector<CryptoProvider>::scriptIdToString(const std::vector<unsigned char> & id) const
 {
     xbridge::XBitcoinAddress baddr;
     baddr.Set(CScriptID(uint160(id)), scriptPrefix[0]);
@@ -1460,7 +1658,8 @@ std::string BtcWalletConnector::scriptIdToString(const std::vector<unsigned char
 // calculate tx fee for deposit tx
 // output count always 1
 //******************************************************************************
-double BtcWalletConnector::minTxFee1(const uint32_t inputCount, const uint32_t outputCount) const
+template <class CryptoProvider>
+double BtcWalletConnector<CryptoProvider>::minTxFee1(const uint32_t inputCount, const uint32_t outputCount) const
 {
     uint64_t fee = (148*inputCount + 34*outputCount + 10) * feePerByte;
     if (fee < minTxFee)
@@ -1474,7 +1673,8 @@ double BtcWalletConnector::minTxFee1(const uint32_t inputCount, const uint32_t o
 // calculate tx fee for payment/refund tx
 // input count always 1
 //******************************************************************************
-double BtcWalletConnector::minTxFee2(const uint32_t inputCount, const uint32_t outputCount) const
+template <class CryptoProvider>
+double BtcWalletConnector<CryptoProvider>::minTxFee2(const uint32_t inputCount, const uint32_t outputCount) const
 {
     uint64_t fee = (180*inputCount + 34*outputCount + 10) * feePerByte;
     if (fee < minTxFee)
@@ -1488,6 +1688,7 @@ double BtcWalletConnector::minTxFee2(const uint32_t inputCount, const uint32_t o
 // return false if deposit tx not found (need wait tx)
 // true if tx found and checked
 // isGood == true id depost tx is OK
+// amount in - for check vout[0].value, out = vout[0].value
 //******************************************************************************
 template <class CryptoProvider>
 bool BtcWalletConnector<CryptoProvider>::checkDepositTransaction(const std::string & depositTxId,
@@ -1532,16 +1733,24 @@ bool BtcWalletConnector<CryptoProvider>::checkDepositTransaction(const std::stri
         }
     }
 
-    // TODO check amount in tx
-
-    isGood = true;
+    // TODO check amount in tx, temporary only first vout
+    json_spirit::Array  vout    = json_spirit::find_value(txo, "vout").get_array();
+    json_spirit::Object vout0   = vout[0].get_obj();
+    json_spirit::Value  vamount = json_spirit::find_value(vout0, "value");
+    double receivedAmount = vamount.get_real();
+    if (receivedAmount > amount)
+    {
+        amount = receivedAmount;
+        isGood = true;
+    }
 
     return true;
 }
 
 //******************************************************************************
 //******************************************************************************
-uint32_t BtcWalletConnector::lockTime(const char role) const
+template <class CryptoProvider>
+uint32_t BtcWalletConnector<CryptoProvider>::lockTime(const char role) const
 {
     rpc::WalletInfo info;
     if (!rpc::getblockchaininfo(m_user, m_passwd, m_ip, m_port, info))
@@ -1585,7 +1794,8 @@ uint32_t BtcWalletConnector::lockTime(const char role) const
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::createDepositUnlockScript(const std::vector<unsigned char> & myPubKey,
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::createDepositUnlockScript(const std::vector<unsigned char> & myPubKey,
                                                           const std::vector<unsigned char> & otherPubKey,
                                                           const std::vector<unsigned char> & xdata,
                                                           const uint32_t lockTime,
@@ -1610,10 +1820,11 @@ bool BtcWalletConnector::createDepositUnlockScript(const std::vector<unsigned ch
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::createDepositTransaction(const std::vector<std::pair<std::string, int> > & inputs,
-                                                         const std::vector<std::pair<std::string, double> > & outputs,
-                                                         std::string & txId,
-                                                         std::string & rawTx)
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::createDepositTransaction(const std::vector<XTxIn> & inputs,
+                                                                  const std::vector<std::pair<std::string, double> > & outputs,
+                                                                  std::string & txId,
+                                                                  std::string & rawTx)
 {
     if (!rpc::createRawTransaction(m_user, m_passwd, m_ip, m_port,
                                    inputs, outputs, 0, rawTx))
@@ -1655,7 +1866,7 @@ bool BtcWalletConnector::createDepositTransaction(const std::vector<std::pair<st
 //******************************************************************************
 xbridge::CTransactionPtr createTransaction(const bool txWithTimeField)
 {
-    return xbridge::CTransactionPtr(new xbridge::CBTCTransaction);
+    return xbridge::CTransactionPtr(new xbridge::CTransaction(txWithTimeField));
 }
 
 //******************************************************************************
@@ -1668,13 +1879,13 @@ xbridge::CTransactionPtr createTransaction(const WalletConnector & conn,
                                            const uint32_t lockTime,
                                            const bool txWithTimeField)
 {
-    xbridge::CTransactionPtr tx(new xbridge::CBTCTransaction);
+    xbridge::CTransactionPtr tx(new xbridge::CTransaction(txWithTimeField));
     tx->nVersion  = txversion;
     tx->nLockTime = lockTime;
 
     for (const XTxIn & in : inputs)
     {
-        tx->vin.push_back(CTxIn(COutPoint(uint256(in.first), in.second)));
+        tx->vin.push_back(CTxIn(COutPoint(uint256(in.txid), in.n)));
     }
 
     for (const std::pair<std::string, double> & out : outputs)
@@ -1692,14 +1903,15 @@ xbridge::CTransactionPtr createTransaction(const WalletConnector & conn,
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::createRefundTransaction(const std::vector<std::pair<std::string, int> > & inputs,
-                                                        const std::vector<std::pair<std::string, double> > & outputs,
-                                                        const std::vector<unsigned char> & mpubKey,
-                                                        const std::vector<unsigned char> & mprivKey,
-                                                        const std::vector<unsigned char> & innerScript,
-                                                        const uint32_t lockTime,
-                                                        std::string & txId,
-                                                        std::string & rawTx)
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::createRefundTransaction(const std::vector<XTxIn> & inputs,
+                                                                 const std::vector<std::pair<std::string, double> > & outputs,
+                                                                 const std::vector<unsigned char> & mpubKey,
+                                                                 const std::vector<unsigned char> & mprivKey,
+                                                                 const std::vector<unsigned char> & innerScript,
+                                                                 const uint32_t lockTime,
+                                                                 std::string & txId,
+                                                                 std::string & rawTx)
 {
     xbridge::CTransactionPtr txUnsigned = createTransaction(*this,
                                                             inputs, outputs,
@@ -1708,16 +1920,6 @@ bool BtcWalletConnector::createRefundTransaction(const std::vector<std::pair<std
     txUnsigned->vin[0].nSequence = std::numeric_limits<uint32_t>::max()-1;
 
     CScript inner(innerScript.begin(), innerScript.end());
-
-    xbridge::CKey m;
-    m.Set(mprivKey.begin(), mprivKey.end(), true);
-    if (!m.IsValid())
-    {
-        // cancel transaction
-        LOG() << "sign transaction error, restore private key failed, transaction canceled " << __FUNCTION__;
-//            sendCancelTransaction(xtx, crNotSigned);
-        return false;
-    }
 
     CScript redeem;
     {
@@ -1741,7 +1943,7 @@ bool BtcWalletConnector::createRefundTransaction(const std::vector<std::pair<std
         redeem += tmp;
     }
 
-    xbridge::CTransactionPtr tx(createTransaction());
+    xbridge::CTransactionPtr tx(createTransaction(txWithTimeField));
     if (!tx)
     {
         ERR() << "transaction not created " << __FUNCTION__;
@@ -1749,6 +1951,7 @@ bool BtcWalletConnector::createRefundTransaction(const std::vector<std::pair<std
         return false;
     }
     tx->nVersion  = txUnsigned->nVersion;
+    tx->nTime     = txUnsigned->nTime;
     tx->vin.push_back(CTxIn(txUnsigned->vin[0].prevout, redeem, std::numeric_limits<uint32_t>::max()-1));
     tx->vout      = txUnsigned->vout;
     tx->nLockTime = txUnsigned->nLockTime;
@@ -1771,14 +1974,15 @@ bool BtcWalletConnector::createRefundTransaction(const std::vector<std::pair<std
 
 //******************************************************************************
 //******************************************************************************
-bool BtcWalletConnector::createPaymentTransaction(const std::vector<std::pair<std::string, int> > & inputs,
-                                                         const std::vector<std::pair<std::string, double> > & outputs,
-                                                         const std::vector<unsigned char> & mpubKey,
-                                                         const std::vector<unsigned char> & mprivKey,
-                                                         const std::vector<unsigned char> & xpubKey,
-                                                         const std::vector<unsigned char> & innerScript,
-                                                         std::string & txId,
-                                                         std::string & rawTx)
+template <class CryptoProvider>
+bool BtcWalletConnector<CryptoProvider>::createPaymentTransaction(const std::vector<XTxIn> & inputs,
+                                                                  const std::vector<std::pair<std::string, double> > & outputs,
+                                                                  const std::vector<unsigned char> & mpubKey,
+                                                                  const std::vector<unsigned char> & mprivKey,
+                                                                  const std::vector<unsigned char> & xpubKey,
+                                                                  const std::vector<unsigned char> & innerScript,
+                                                                  std::string & txId,
+                                                                  std::string & rawTx)
 {
     xbridge::CTransactionPtr txUnsigned = createTransaction(*this,
                                                             inputs, outputs,
@@ -1786,16 +1990,6 @@ bool BtcWalletConnector::createPaymentTransaction(const std::vector<std::pair<st
                                                             0, txWithTimeField);
 
     CScript inner(innerScript.begin(), innerScript.end());
-
-    xbridge::CKey m;
-    m.Set(mprivKey.begin(), mprivKey.end(), true);
-    if (!m.IsValid())
-    {
-        // cancel transaction
-        LOG() << "sign transaction error (SetSecret failed), transaction canceled " << __FUNCTION__;
-//            sendCancelTransaction(xtx, crNotSigned);
-        return false;
-    }
 
     std::vector<unsigned char> signature;
     uint256 hash = SignatureHash(inner, txUnsigned, 0, SIGHASH_ALL);
@@ -1814,7 +2008,7 @@ bool BtcWalletConnector::createPaymentTransaction(const std::vector<std::pair<st
            << signature << mpubKey
            << OP_FALSE << inner;
 
-    xbridge::CTransactionPtr tx(createTransaction());
+    xbridge::CTransactionPtr tx(createTransaction(txWithTimeField));
     if (!tx)
     {
         ERR() << "transaction not created " << __FUNCTION__;
@@ -1822,6 +2016,7 @@ bool BtcWalletConnector::createPaymentTransaction(const std::vector<std::pair<st
         return false;
     }
     tx->nVersion  = txUnsigned->nVersion;
+    tx->nTime     = txUnsigned->nTime;
     tx->vin.push_back(CTxIn(txUnsigned->vin[0].prevout, redeem));
     tx->vout      = txUnsigned->vout;
 
@@ -1840,5 +2035,8 @@ bool BtcWalletConnector::createPaymentTransaction(const std::vector<std::pair<st
 
     return true;
 }
+
+// explicit instantiation
+BtcWalletConnector<BtcCryptoProvider> variable;
 
 } // namespace xbridge

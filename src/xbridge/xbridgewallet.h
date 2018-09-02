@@ -28,6 +28,7 @@ struct UtxoEntry
     uint32_t    vout;
     double      amount;
     std::string address;
+    std::string scriptPubKey;
 
     std::vector<unsigned char> rawAddress;
     std::vector<unsigned char> signature;
@@ -37,6 +38,11 @@ struct UtxoEntry
     bool operator < (const UtxoEntry & r) const
     {
         return (txId < r.txId) || ((txId == r.txId) && (vout < r.vout));
+    }
+
+    bool operator == (const UtxoEntry & r) const
+    {
+        return (txId == r.txId) && (vout ==r.vout);
     }
 };
 
@@ -87,7 +93,8 @@ public:
         method                      = other.method;
         blockTime                   = other.blockTime;
         requiredConfirmations       = other.requiredConfirmations;
-        // serviceNodeFee = other.serviceNodeFee;
+        txWithTimeField             = other.txWithTimeField;
+        isLockCoinsSupported        = other.isLockCoinsSupported;
 
         return *this;
     }
@@ -115,10 +122,10 @@ public:
     std::string                  method;
 
     // block time in seconds
-    uint32_t                   blockTime;
+    uint32_t                     blockTime;
 
     // required confirmations for tx
-    uint32_t                   requiredConfirmations;
+    uint32_t                     requiredConfirmations;
 
     //service node fee, see rpc::storeDataIntoBlockchain
     const double                 serviceNodeFee;

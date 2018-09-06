@@ -1648,7 +1648,7 @@ int64_t GetBlockValue(int nHeight)
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
         if (nHeight < 200 && nHeight > 0)
-            return 250000 * COIN;
+            return 250 * COIN;
     }
     //max supply is 22.5M
     CAmount circulatingSupply = (double)chainActive.Tip()->nMoneySupply / (double)COIN;
@@ -1663,27 +1663,13 @@ int64_t GetBlockValue(int nHeight)
 
     if (nHeight == 0) {
         nSubsidy = 1250000 * COIN;
-    } else if (nHeight >= 70000 && nHeight <= 80000) {
-        nSubsidy = 2 * COIN;
-    } else if (nHeight > 80000 && nHeight <= 90000) {
-        nSubsidy = 3 * COIN;
-    } else if (nHeight > 90000 && nHeight <= 100000) {
-        nSubsidy = 4 * COIN;
-    } else if (nHeight > 100000 && nHeight <= 110000) {
+    } else if (nHeight >= 113476 && nHeight < 200000) {
         nSubsidy = 5 * COIN;
-    } else if (nHeight > 110000 && nHeight <= 120000) {
-        nSubsidy = 6 * COIN;
-    } else if (nHeight > 120000 && nHeight <= 130000) {
-        nSubsidy = 7 * COIN;
-    } else if (nHeight > 130000 && nHeight <= 140000) {
-        nSubsidy = 6 * COIN;
-    } else if (nHeight > 140000 && nHeight <= 150000) {
-        nSubsidy = 5 * COIN;
-    } else if (nHeight > 150000 && nHeight <= 160000) {
+    } else if (nHeight >= 200000 && nHeight < 300000) {
         nSubsidy = 4 * COIN;
-    } else if (nHeight > 160000 && nHeight <= 170000) {
+    } else if (nHeight >= 300000 && nHeight < 400000) {
         nSubsidy = 3 * COIN;
-    } else if (nHeight > 170000 && nHeight <= 225000) {
+    } else if (nHeight >= 400000 && nHeight < 500000) {
         nSubsidy = 2 * COIN;
     } else {
         nSubsidy = 1 * COIN;

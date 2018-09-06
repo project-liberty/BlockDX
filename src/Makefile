@@ -88,8 +88,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-apple-darwin17.6.0
-host_triplet = x86_64-apple-darwin17.6.0
+build_triplet = x86_64-apple-darwin17.7.0
+host_triplet = x86_64-apple-darwin17.7.0
 am__append_1 = -I$(srcdir)/leveldb/include \
 	-I$(srcdir)/leveldb/helpers/memenv
 am__append_2 = $(builddir)/leveldb/libleveldb.a
@@ -320,6 +320,7 @@ libbitcoin_server_a_AR = $(AR) $(ARFLAGS)
 libbitcoin_server_a_LIBADD =
 am_libbitcoin_server_a_OBJECTS =  \
 	libbitcoin_server_a-addrman.$(OBJEXT) \
+	libbitcoin_server_a-autotruncatelog.$(OBJEXT) \
 	libbitcoin_server_a-alert.$(OBJEXT) \
 	libbitcoin_server_a-bloom.$(OBJEXT) \
 	libbitcoin_server_a-chain.$(OBJEXT) \
@@ -356,10 +357,10 @@ am__libbitcoin_util_a_SOURCES_DIST = allocators.cpp compat/strnlen.cpp \
 	rpcprotocol.cpp sync.cpp uint256.cpp util.cpp \
 	utilstrencodings.cpp utilmoneystr.cpp utiltime.cpp \
 	support/cleanse.cpp activeservicenode.h addrman.h alert.h \
-	allocators.h amount.h base58.h bip38.h bloom.h chain.h \
-	chainparams.h chainparamsbase.h chainparamsseeds.h \
-	checkpoints.h checkqueue.h clientversion.h coincontrol.h \
-	coins.h compat.h compat/sanity.h compat/endian.h \
+	allocators.h autotruncatelog.h amount.h base58.h bip38.h \
+	bloom.h chain.h chainparams.h chainparamsbase.h \
+	chainparamsseeds.h checkpoints.h checkqueue.h clientversion.h \
+	coincontrol.h coins.h compat.h compat/sanity.h compat/endian.h \
 	compat/byteswap.h compressor.h primitives/block.h \
 	primitives/transaction.h core_io.h crypter.h obfuscation.h \
 	obfuscation-relay.h db.h eccryptoverify.h hash.h init.h \
@@ -1007,6 +1008,7 @@ am__depfiles_remade = ./$(DEPDIR)/libbitcoin_cli_a-rpcclient.Po \
 	./$(DEPDIR)/libbitcoin_common_a-spork.Po \
 	./$(DEPDIR)/libbitcoin_server_a-addrman.Po \
 	./$(DEPDIR)/libbitcoin_server_a-alert.Po \
+	./$(DEPDIR)/libbitcoin_server_a-autotruncatelog.Po \
 	./$(DEPDIR)/libbitcoin_server_a-bloom.Po \
 	./$(DEPDIR)/libbitcoin_server_a-chain.Po \
 	./$(DEPDIR)/libbitcoin_server_a-checkpoints.Po \
@@ -1633,13 +1635,13 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-ACLOCAL = ${SHELL} /Users/martinmizzell/repos/liberty/build-aux/missing aclocal-1.16
+ACLOCAL = ${SHELL} /Users/martinmizzell/repos/libertycoin/build-aux/missing aclocal-1.16
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 0
 AR = /usr/bin/ar
-AUTOCONF = ${SHELL} /Users/martinmizzell/repos/liberty/build-aux/missing autoconf
-AUTOHEADER = ${SHELL} /Users/martinmizzell/repos/liberty/build-aux/missing autoheader
-AUTOMAKE = ${SHELL} /Users/martinmizzell/repos/liberty/build-aux/missing automake-1.16
+AUTOCONF = ${SHELL} /Users/martinmizzell/repos/libertycoin/build-aux/missing autoconf
+AUTOHEADER = ${SHELL} /Users/martinmizzell/repos/libertycoin/build-aux/missing autoheader
+AUTOMAKE = ${SHELL} /Users/martinmizzell/repos/libertycoin/build-aux/missing automake-1.16
 AWK = awk
 BDB_CPPFLAGS =  -I/opt/local/include/db48/
 BDB_LIBS = -ldb_cxx-4.8
@@ -1661,18 +1663,18 @@ CC = gcc
 CCACHE = 
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
-CLIENT_VERSION_BUILD = 0
+CLIENT_VERSION_BUILD = 1
 CLIENT_VERSION_IS_RELEASE = true
 CLIENT_VERSION_MAJOR = 4
 CLIENT_VERSION_MINOR = 0
-CLIENT_VERSION_REVISION = 1
+CLIENT_VERSION_REVISION = 4
 COMPARISON_TOOL_REORG_TESTS = 0
 COPYRIGHT_YEAR = 2018
 CPP = gcc -E
 CPPFILT = /usr/bin/c++filt
 CPPFLAGS =  -DBOOST_SPIRIT_THREADSAFE -DHAVE_BUILD_INFO -D__STDC_FORMAT_MACROS -isystem /opt/local/include -I/opt/local/include/db48 -I/usr/local/opt/berkeley-db@4/include -DMAC_OSX  -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -DHAVE_QT5
-CRYPTO_CFLAGS = -I/usr/local/Cellar/openssl/1.0.2o_1/include
-CRYPTO_LIBS = -L/usr/local/Cellar/openssl/1.0.2o_1/lib -lcrypto
+CRYPTO_CFLAGS = -I/usr/local/Cellar/openssl/1.0.2o_2/include
+CRYPTO_LIBS = -L/usr/local/Cellar/openssl/1.0.2o_2/lib -lcrypto
 CXX = g++ -std=c++11
 CXXCPP = g++ -std=c++11 -E
 CXXDEPMODE = depmode=gcc3
@@ -1718,18 +1720,18 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBTOOL_APP_LDFLAGS = 
 LIPO = lipo
 LN_S = ln -s
-LRELEASE = /usr/local/Cellar/qt/5.10.1/bin/lrelease
+LRELEASE = /usr/local/Cellar/qt/5.11.1/bin/lrelease
 LTLIBOBJS = 
 LT_SYS_LIBRARY_PATH = 
-LUPDATE = /usr/local/Cellar/qt/5.10.1/bin/lupdate
+LUPDATE = /usr/local/Cellar/qt/5.11.1/bin/lupdate
 MAINT = 
-MAKEINFO = ${SHELL} /Users/martinmizzell/repos/liberty/build-aux/missing makeinfo
+MAKEINFO = ${SHELL} /Users/martinmizzell/repos/libertycoin/build-aux/missing makeinfo
 MAKENSIS = 
 MANIFEST_TOOL = :
 MINIUPNPC_CPPFLAGS = 
 MINIUPNPC_LIBS = -lminiupnpc
 MKDIR_P = ../build-aux/install-sh -c -d
-MOC = /usr/local/Cellar/qt/5.10.1/bin/moc
+MOC = /usr/local/Cellar/qt/5.11.1/bin/moc
 MOC_DEFS = -DHAVE_CONFIG_H -I$(srcdir) -DQ_OS_MAC
 NM = /usr/bin/nm -B
 NMEDIT = nmedit
@@ -1744,17 +1746,17 @@ OTOOL64 = :
 PACKAGE = liberty
 PACKAGE_BUGREPORT = www.lbrt.io
 PACKAGE_NAME = Liberty Core
-PACKAGE_STRING = Liberty Core 4.0.1
+PACKAGE_STRING = Liberty Core 4.0.4
 PACKAGE_TARNAME = liberty
 PACKAGE_URL = 
-PACKAGE_VERSION = 4.0.1
+PACKAGE_VERSION = 4.0.4
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/local/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
 PKG_CONFIG_PATH = /usr/local/opt/qt/lib/pkgconfig:/usr/local/opt/openssl/lib/pkgconfig:
 PORT = port
-PROTOBUF_CFLAGS = -D_THREAD_SAFE -I/usr/local/Cellar/protobuf/3.5.1_1/include
-PROTOBUF_LIBS = -L/usr/local/Cellar/protobuf/3.5.1_1/lib -lprotobuf -D_THREAD_SAFE
+PROTOBUF_CFLAGS = -pthread -I/usr/local/Cellar/protobuf/3.6.0/include
+PROTOBUF_LIBS = -L/usr/local/Cellar/protobuf/3.6.0/lib -lprotobuf -pthread
 PROTOC = /usr/local/bin/protoc
 PTHREAD_CC = gcc
 PTHREAD_CFLAGS = -D_THREAD_SAFE -pthread
@@ -1769,36 +1771,36 @@ QTPRINT_CFLAGS =
 QTPRINT_LIBS = 
 QTXCBQPA_CFLAGS = 
 QTXCBQPA_LIBS = 
-QT_CFLAGS = -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.10.1/include/QtNetwork -I/usr/local/Cellar/qt/5.10.1/include -I/usr/local/Cellar/qt/5.10.1/include/QtWidgets -I/usr/local/Cellar/qt/5.10.1/include -I/usr/local/Cellar/qt/5.10.1/include/QtGui -I/usr/local/Cellar/qt/5.10.1/include -I/usr/local/Cellar/qt/5.10.1/include/QtCore -I/usr/local/Cellar/qt/5.10.1/include
-QT_DBUS_CFLAGS = -DQT_DBUS_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.10.1/include/QtDBus -I/usr/local/Cellar/qt/5.10.1/include -I/usr/local/Cellar/qt/5.10.1/include/QtCore -I/usr/local/Cellar/qt/5.10.1/include
-QT_DBUS_INCLUDES = -DQT_DBUS_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.10.1/include/QtDBus -I/usr/local/Cellar/qt/5.10.1/include -I/usr/local/Cellar/qt/5.10.1/include/QtCore -I/usr/local/Cellar/qt/5.10.1/include
-QT_DBUS_LIBS = -F/usr/local/Cellar/qt/5.10.1/lib -framework QtDBus -F/usr/local/Cellar/qt/5.10.1/lib -framework QtCore
-QT_INCLUDES = -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.10.1/include/QtNetwork -I/usr/local/Cellar/qt/5.10.1/include -I/usr/local/Cellar/qt/5.10.1/include/QtWidgets -I/usr/local/Cellar/qt/5.10.1/include -I/usr/local/Cellar/qt/5.10.1/include/QtGui -I/usr/local/Cellar/qt/5.10.1/include -I/usr/local/Cellar/qt/5.10.1/include/QtCore -I/usr/local/Cellar/qt/5.10.1/include
+QT_CFLAGS = -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.11.1/include/QtNetwork -I/usr/local/Cellar/qt/5.11.1/include -I/usr/local/Cellar/qt/5.11.1/include/QtWidgets -I/usr/local/Cellar/qt/5.11.1/include -I/usr/local/Cellar/qt/5.11.1/include/QtGui -I/usr/local/Cellar/qt/5.11.1/include -I/usr/local/Cellar/qt/5.11.1/include/QtCore -I/usr/local/Cellar/qt/5.11.1/include
+QT_DBUS_CFLAGS = -DQT_DBUS_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.11.1/include/QtDBus -I/usr/local/Cellar/qt/5.11.1/include -I/usr/local/Cellar/qt/5.11.1/include/QtCore -I/usr/local/Cellar/qt/5.11.1/include
+QT_DBUS_INCLUDES = -DQT_DBUS_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.11.1/include/QtDBus -I/usr/local/Cellar/qt/5.11.1/include -I/usr/local/Cellar/qt/5.11.1/include/QtCore -I/usr/local/Cellar/qt/5.11.1/include
+QT_DBUS_LIBS = -F/usr/local/Cellar/qt/5.11.1/lib -framework QtDBus -F/usr/local/Cellar/qt/5.11.1/lib -framework QtCore
+QT_INCLUDES = -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.11.1/include/QtNetwork -I/usr/local/Cellar/qt/5.11.1/include -I/usr/local/Cellar/qt/5.11.1/include/QtWidgets -I/usr/local/Cellar/qt/5.11.1/include -I/usr/local/Cellar/qt/5.11.1/include/QtGui -I/usr/local/Cellar/qt/5.11.1/include -I/usr/local/Cellar/qt/5.11.1/include/QtCore -I/usr/local/Cellar/qt/5.11.1/include
 QT_LDFLAGS = 
-QT_LIBS = -F/usr/local/Cellar/qt/5.10.1/lib -framework QtNetwork -F/usr/local/Cellar/qt/5.10.1/lib -framework QtWidgets -F/usr/local/Cellar/qt/5.10.1/lib -framework QtGui -F/usr/local/Cellar/qt/5.10.1/lib -framework QtCore -framework Foundation -framework ApplicationServices -framework AppKit
+QT_LIBS = -F/usr/local/Cellar/qt/5.11.1/lib -framework QtNetwork -F/usr/local/Cellar/qt/5.11.1/lib -framework QtWidgets -F/usr/local/Cellar/qt/5.11.1/lib -framework QtGui -F/usr/local/Cellar/qt/5.11.1/lib -framework QtCore -framework Foundation -framework ApplicationServices -framework AppKit
 QT_PIE_FLAGS = 
 QT_SELECT = qt5
-QT_TEST_CFLAGS = -DQT_TESTLIB_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.10.1/include/QtTest -I/usr/local/Cellar/qt/5.10.1/include -I/usr/local/Cellar/qt/5.10.1/include/QtCore -I/usr/local/Cellar/qt/5.10.1/include
-QT_TEST_INCLUDES = -DQT_TESTLIB_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.10.1/include/QtTest -I/usr/local/Cellar/qt/5.10.1/include -I/usr/local/Cellar/qt/5.10.1/include/QtCore -I/usr/local/Cellar/qt/5.10.1/include
-QT_TEST_LIBS = -F/usr/local/Cellar/qt/5.10.1/lib -framework QtTest -F/usr/local/Cellar/qt/5.10.1/lib -framework QtCore
+QT_TEST_CFLAGS = -DQT_TESTLIB_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.11.1/include/QtTest -I/usr/local/Cellar/qt/5.11.1/include -I/usr/local/Cellar/qt/5.11.1/include/QtCore -I/usr/local/Cellar/qt/5.11.1/include
+QT_TEST_INCLUDES = -DQT_TESTLIB_LIB -DQT_CORE_LIB -I/usr/local/Cellar/qt/5.11.1/include/QtTest -I/usr/local/Cellar/qt/5.11.1/include -I/usr/local/Cellar/qt/5.11.1/include/QtCore -I/usr/local/Cellar/qt/5.11.1/include
+QT_TEST_LIBS = -F/usr/local/Cellar/qt/5.11.1/lib -framework QtTest -F/usr/local/Cellar/qt/5.11.1/lib -framework QtCore
 QT_TRANSLATION_DIR = 
 RANLIB = /usr/bin/ranlib
-RCC = /usr/local/Cellar/qt/5.10.1/bin/rcc
+RCC = /usr/local/Cellar/qt/5.11.1/bin/rcc
 READELF = 
 RELDFLAGS = 
-RSVG_CONVERT = /usr/local/bin/rsvg-convert
+RSVG_CONVERT = rsvg-convert
 SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
-SSL_CFLAGS = -I/usr/local/Cellar/openssl/1.0.2o_1/include
-SSL_LIBS = -L/usr/local/Cellar/openssl/1.0.2o_1/lib -lssl
+SSL_CFLAGS = -I/usr/local/Cellar/openssl/1.0.2o_2/include
+SSL_LIBS = -L/usr/local/Cellar/openssl/1.0.2o_2/lib -lssl
 STRIP = /usr/bin/strip
 TESTDEFS =  -DBOOST_TEST_DYN_LINK
 TIFFCP = 
-UIC = /usr/local/Cellar/qt/5.10.1/bin/uic
+UIC = /usr/local/Cellar/qt/5.11.1/bin/uic
 USE_QRCODE = 
 USE_UPNP = 
-VERSION = 4.0.1
+VERSION = 4.0.4
 WINDOWS_BITS = 
 WINDRES = 
 X11XCB_CFLAGS = 
@@ -1806,10 +1808,10 @@ X11XCB_LIBS =
 XGETTEXT = /opt/local/bin/xgettext
 ZMQ_CFLAGS = -I/usr/local/Cellar/zeromq/4.2.5/include
 ZMQ_LIBS = -L/usr/local/Cellar/zeromq/4.2.5/lib -lzmq
-abs_builddir = /Users/martinmizzell/repos/liberty/src
-abs_srcdir = /Users/martinmizzell/repos/liberty/src
-abs_top_builddir = /Users/martinmizzell/repos/liberty
-abs_top_srcdir = /Users/martinmizzell/repos/liberty
+abs_builddir = /Users/martinmizzell/repos/libertycoin/src
+abs_srcdir = /Users/martinmizzell/repos/libertycoin/src
+abs_top_builddir = /Users/martinmizzell/repos/libertycoin
+abs_top_srcdir = /Users/martinmizzell/repos/libertycoin
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -1822,10 +1824,10 @@ am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 ax_pthread_config = 
 bindir = ${exec_prefix}/bin
-build = x86_64-apple-darwin17.6.0
+build = x86_64-apple-darwin17.7.0
 build_alias = 
 build_cpu = x86_64
-build_os = darwin17.6.0
+build_os = darwin17.7.0
 build_vendor = apple
 builddir = .
 datadir = ${datarootdir}
@@ -1833,15 +1835,15 @@ datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-apple-darwin17.6.0
+host = x86_64-apple-darwin17.7.0
 host_alias = 
 host_cpu = x86_64
-host_os = darwin17.6.0
+host_os = darwin17.7.0
 host_vendor = apple
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /Users/martinmizzell/repos/liberty/build-aux/install-sh
+install_sh = ${SHELL} /Users/martinmizzell/repos/libertycoin/build-aux/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -1894,6 +1896,7 @@ BITCOIN_CORE_H = \
   addrman.h \
   alert.h \
   allocators.h \
+  autotruncatelog.h \
   amount.h \
   base58.h \
   bip38.h \
@@ -2004,6 +2007,7 @@ JSON_H = \
 libbitcoin_server_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS)
 libbitcoin_server_a_SOURCES = \
   addrman.cpp \
+  autotruncatelog.cpp \
   alert.cpp \
   bloom.cpp \
   chain.cpp \
@@ -3514,6 +3518,7 @@ include ./$(DEPDIR)/libbitcoin_common_a-s3downloader.Po # am--include-marker
 include ./$(DEPDIR)/libbitcoin_common_a-spork.Po # am--include-marker
 include ./$(DEPDIR)/libbitcoin_server_a-addrman.Po # am--include-marker
 include ./$(DEPDIR)/libbitcoin_server_a-alert.Po # am--include-marker
+include ./$(DEPDIR)/libbitcoin_server_a-autotruncatelog.Po # am--include-marker
 include ./$(DEPDIR)/libbitcoin_server_a-bloom.Po # am--include-marker
 include ./$(DEPDIR)/libbitcoin_server_a-chain.Po # am--include-marker
 include ./$(DEPDIR)/libbitcoin_server_a-checkpoints.Po # am--include-marker
@@ -4476,6 +4481,20 @@ libbitcoin_server_a-addrman.obj: addrman.cpp
 #	$(AM_V_CXX)source='addrman.cpp' object='libbitcoin_server_a-addrman.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libbitcoin_server_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libbitcoin_server_a-addrman.obj `if test -f 'addrman.cpp'; then $(CYGPATH_W) 'addrman.cpp'; else $(CYGPATH_W) '$(srcdir)/addrman.cpp'; fi`
+
+libbitcoin_server_a-autotruncatelog.o: autotruncatelog.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libbitcoin_server_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libbitcoin_server_a-autotruncatelog.o -MD -MP -MF $(DEPDIR)/libbitcoin_server_a-autotruncatelog.Tpo -c -o libbitcoin_server_a-autotruncatelog.o `test -f 'autotruncatelog.cpp' || echo '$(srcdir)/'`autotruncatelog.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libbitcoin_server_a-autotruncatelog.Tpo $(DEPDIR)/libbitcoin_server_a-autotruncatelog.Po
+#	$(AM_V_CXX)source='autotruncatelog.cpp' object='libbitcoin_server_a-autotruncatelog.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libbitcoin_server_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libbitcoin_server_a-autotruncatelog.o `test -f 'autotruncatelog.cpp' || echo '$(srcdir)/'`autotruncatelog.cpp
+
+libbitcoin_server_a-autotruncatelog.obj: autotruncatelog.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libbitcoin_server_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libbitcoin_server_a-autotruncatelog.obj -MD -MP -MF $(DEPDIR)/libbitcoin_server_a-autotruncatelog.Tpo -c -o libbitcoin_server_a-autotruncatelog.obj `if test -f 'autotruncatelog.cpp'; then $(CYGPATH_W) 'autotruncatelog.cpp'; else $(CYGPATH_W) '$(srcdir)/autotruncatelog.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libbitcoin_server_a-autotruncatelog.Tpo $(DEPDIR)/libbitcoin_server_a-autotruncatelog.Po
+#	$(AM_V_CXX)source='autotruncatelog.cpp' object='libbitcoin_server_a-autotruncatelog.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libbitcoin_server_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libbitcoin_server_a-autotruncatelog.obj `if test -f 'autotruncatelog.cpp'; then $(CYGPATH_W) 'autotruncatelog.cpp'; else $(CYGPATH_W) '$(srcdir)/autotruncatelog.cpp'; fi`
 
 libbitcoin_server_a-alert.o: alert.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libbitcoin_server_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libbitcoin_server_a-alert.o -MD -MP -MF $(DEPDIR)/libbitcoin_server_a-alert.Tpo -c -o libbitcoin_server_a-alert.o `test -f 'alert.cpp' || echo '$(srcdir)/'`alert.cpp
@@ -8600,6 +8619,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/libbitcoin_common_a-spork.Po
 	-rm -f ./$(DEPDIR)/libbitcoin_server_a-addrman.Po
 	-rm -f ./$(DEPDIR)/libbitcoin_server_a-alert.Po
+	-rm -f ./$(DEPDIR)/libbitcoin_server_a-autotruncatelog.Po
 	-rm -f ./$(DEPDIR)/libbitcoin_server_a-bloom.Po
 	-rm -f ./$(DEPDIR)/libbitcoin_server_a-chain.Po
 	-rm -f ./$(DEPDIR)/libbitcoin_server_a-checkpoints.Po
@@ -8959,6 +8979,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/libbitcoin_common_a-spork.Po
 	-rm -f ./$(DEPDIR)/libbitcoin_server_a-addrman.Po
 	-rm -f ./$(DEPDIR)/libbitcoin_server_a-alert.Po
+	-rm -f ./$(DEPDIR)/libbitcoin_server_a-autotruncatelog.Po
 	-rm -f ./$(DEPDIR)/libbitcoin_server_a-bloom.Po
 	-rm -f ./$(DEPDIR)/libbitcoin_server_a-chain.Po
 	-rm -f ./$(DEPDIR)/libbitcoin_server_a-checkpoints.Po

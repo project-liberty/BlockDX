@@ -106,7 +106,6 @@ public:
         nTargetTimespan = 7 * 60; // Liberty: 1 minute
         nTargetSpacing = 1 * 60;  // Liberty: 1 minute
         nLastPOWBlock = 500;
-        nMaturity = 5;
         nServicenodeCountDrift = 200;
         nModifierUpdateBlock = 1;
 
@@ -199,7 +198,6 @@ public:
         nTargetTimespan = 1 * 60; // Liberty: 1 day
         nTargetSpacing = 1 * 60;  // Liberty: 1 minute
         nLastPOWBlock = 2000;
-        nMaturity = 15;
         nModifierUpdateBlock = 1; 
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.

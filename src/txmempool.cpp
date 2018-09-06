@@ -479,7 +479,7 @@ void CTxMemPool::removeCoinbaseSpends(const CCoinsViewCache* pcoins, unsigned in
             if (!coins ||
                     ((coins->IsCoinBase() || coins->IsCoinStake())
                      &&
-                     (((int)nMemPoolHeight - coins->nHeight) < Params().COINBASE_MATURITY()))) {
+                     (((int)nMemPoolHeight - coins->nHeight) < GetCoinbaseMaturity(coins->nHeight)))) {
                 transactionsToRemove.push_back(tx);
                 break;
             }

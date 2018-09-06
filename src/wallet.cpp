@@ -1575,8 +1575,9 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         if (GetTime() - out.tx->GetTxTime() < nStakeMinAge)
             continue;
 
+        int fromBlockHeight = chainActive.Height() - out.nDepth;
         //check that it is matured
-        if (out.nDepth < (out.tx->IsCoinStake() ? Params().COINBASE_MATURITY() : 10))
+        if (out.nDepth < (out.tx->IsCoinStake() ? GetCoinbaseMaturity(fromBlockHeight) : 10))
             continue;
 
         //add to our stake set
@@ -3703,7 +3704,12 @@ int CMerkleTx::GetBlocksToMaturity() const
 {
     if (!(IsCoinBase() || IsCoinStake()))
         return 0;
-    return max(0, (Params().COINBASE_MATURITY() + 1) - GetDepthInMainChain());
+    
+    int tip = chainActive.Height();
+    int depth = GetDepthInMainChain();
+    int blockHeight = tip - depth;
+
+    return max(0, (GetCoinbaseMaturity(blockHeight) + 1) - depth);
 }
 
 

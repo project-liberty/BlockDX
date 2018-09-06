@@ -74,7 +74,6 @@ public:
     int64_t TargetSpacing() const { return nTargetSpacing; }
     int64_t Interval() const { return nTargetTimespan / nTargetSpacing; }
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
-    int COINBASE_MATURITY() const { return nMaturity; }
     int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }
     /** The servicenode count that we will allow the see-saw reward payments to be off by */
     int ServicenodeCountDrift() const { return nServicenodeCountDrift; }
@@ -111,7 +110,6 @@ protected:
     int64_t nTargetSpacing;
     int nLastPOWBlock;
     int nServicenodeCountDrift;
-    int nMaturity;
     int nModifierUpdateBlock;
     int nMinerThreads;
     std::vector<CDNSSeedData> vSeeds;
